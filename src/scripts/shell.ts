@@ -66,6 +66,8 @@ document.addEventListener('click', (e) => {
   frame.allowFullscreen = true;
   frame.referrerPolicy = 'strict-origin-when-cross-origin';
   frame.className = 'yt-frame';
+  btn.closest('[data-stage]')?.classList.add('is-playing');
+  btn.closest('[data-poster]')?.classList.add('is-playing');
   btn.replaceWith(frame);
   frame.focus();
 });

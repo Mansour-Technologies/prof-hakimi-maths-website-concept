@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 export const NOTICE = 'Concept de site internet proposé par Mansour Technologies — Démonstration non officielle.';
-export const SECTIONS = ['professeur', 'approche', 'programme', 'videos', 'etudier', 'contact'];
+export const SECTIONS = ['professeur', 'series', 'programme', 'approche', 'etudier', 'contact'];
 export const VERIFIED_HOSTS = ['ig.me', 'www.instagram.com', 'www.youtube.com', 'www.threads.com', 'mansourtechnologies.com'];
 /** collect console errors and failed requests (excluding third-party YouTube media) */
 export function watch(page: Page) {

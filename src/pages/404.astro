@@ -4,12 +4,12 @@ import { url } from '../lib/url';
 import { tex } from '../lib/tex';
 ---
 <Base title="Page introuvable — Prof Hakimi maths" description="Cette page n'existe pas." home={false}>
-  <section class="page-hero board chalk-grid nf">
+  <section class="section wb nf">
     <div class="wrap">
-      <p class="kicker"><span class="dot"></span> Erreur 404</p>
-      <h1>Hors du <em>domaine</em></h1>
+      <p class="chap__label" aria-hidden="true">Erreur 404 :</p>
+      <h1 class="chap__title">Hors du domaine</h1>
       <p class="lead">Cette adresse n’appartient pas au domaine de définition du site&nbsp;: <span set:html={tex('x\\notin D_f')} />.</p>
-      <p style="margin-top:1.5rem;display:flex;gap:.6rem;flex-wrap:wrap"><a class="btn btn--chalk" href={url('')}>Retour à l’accueil</a><a class="btn btn--ghost" href={url('') + '#contact'}>Contacter le professeur</a></p>
+      <p style="margin-top:1.8rem;display:flex;gap:.7rem;flex-wrap:wrap"><a class="btn btn--red" href={url('')}>Retour à l’accueil</a><a class="btn btn--line" href={url('') + '#contact'}>Contacter le prof</a></p>
     </div>
   </section>
 </Base>

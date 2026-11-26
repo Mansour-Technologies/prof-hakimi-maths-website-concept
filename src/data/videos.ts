@@ -78,3 +78,37 @@ export const fmtDuration = (s: number) => {
   return (h ? `${h}:` : '') + `${mm}:${String(sec).padStart(2, '0')}`;
 };
 
+
+export const byId = (id: string) => {
+  const v = videos.find((x) => x.id === id);
+  if (!v) throw new Error('unknown video ' + id);
+  return v;
+};
+
+/**
+ * Posters: which YouTube-served frame is used as the poster of each video
+ * (chosen in the private asset dossier). Hotlinked from i.ytimg.com only.
+ */
+export const poster = (id: string, frame: 'maxresdefault' | 'hqdefault' | 'hq1' | 'hq2' | 'hq3' | 'sddefault' = 'maxresdefault') =>
+  `https://i.ytimg.com/vi/${id}/${frame}.jpg`;
+
+/** His recurring series, named as he names them in his own video titles. */
+export interface Series {
+  key: string;
+  name: string; // as written in his titles
+  ar?: string;
+  note: string; // neutral description (ours)
+  ids: string[];
+  /** short episode labels (taken from his titles), same order as ids */
+  labels: string[];
+  cover: { id: string; frame: 'maxresdefault' | 'hq1' | 'hq2' | 'hq3' };
+  tone: 'red' | 'orange' | 'green' | 'blue' | 'ink';
+}
+export const series: Series[] = [
+  { key: 'live', name: 'Séance 1 Live · Séance 2 Live', ar: 'الأعداد العقدية', note: 'Le cours complet des nombres complexes, en direct, feutre en main sur ses feuilles encadrées de bleu.', ids: ['yg6YlI4Rz9c', '0ZsTC-TzwnM', '041v4emryEM'], labels: ['Séance 1 Live — partie 1', 'Séance 2 Live — partie 2', 'بداية درس les nombres complexes'], cover: { id: 'yg6YlI4Rz9c', frame: 'hq1' }, tone: 'orange' },
+  { key: 'concours', name: 'Préparation des concours avec Prof HAKIMI', ar: 'Astuce 1 → 5', note: 'Une astuce par Short, sur de vrais sujets : Concours Médecine 2024, Concours ENCG 2022.', ids: ['swRaqQrNO5M', 'hM-zI4OrSjE', 'JVJ_eNszmE4', 'qo4CJma7zKc', 'R5xx-_fV3Tk'], labels: ['Astuce 1', 'Astuce 2', 'Astuce 3', 'Astuce 4', 'Astuce 5'], cover: { id: 'swRaqQrNO5M', frame: 'maxresdefault' }, tone: 'blue' },
+  { key: 'bac', name: 'نصائح لاجتياز الباكالوريا', ar: 'النصيحة 1 · 2 · الامتحان الوطني', note: 'Conseils pour le BAC, jusqu’à 46 minutes d’orientations avant le national.', ids: ['DRtFE7U26-w', 'vJwzbuJX9U0', 'TkdAAgdzUgg', 'ijlRHeyIJRE'], labels: ['نصائح وتوجيهات خاصة بالامتحان الوطني', 'النصيحة 1', 'النصيحة 2', 'رسالة لصحاب الباك 2026'], cover: { id: 'DRtFE7U26-w', frame: 'maxresdefault' }, tone: 'red' },
+  { key: 'moufid', name: 'Corrections — كتاب المفيد', ar: 'علوم تجريبية', note: 'Exercices du manuel Al Moufid corrigés au tableau, et un examen corrigé (continuité, TVI, réciproque).', ids: ['927ZIYtI7AM', 'GuVEiEvAZTo', 'wM88JcxD2ao', 'HdspPTxsy-A'], labels: ['Exercice 32 — dérivabilité de la réciproque', 'Dérivabilité de la réciproque, partie 2', 'Correction d’un examen — continuité, TVI', 'اشتقاق الدالة العكسية'], cover: { id: 'HdspPTxsy-A', frame: 'maxresdefault' }, tone: 'green' },
+  { key: 'najihin', name: '#ناجحين · #Naje7ine', ar: 'بودكاست', note: 'Le podcast du mental : réussir, persévérer, vivre le moment.', ids: ['CAEKCVVox08', 'dvxvJ5lgaVQ', 'X4LGV-d23lA'], labels: ['خدم فقط ثلاث شهور وحقق الحلم ديالو', 'واخا تكون معطل متفقدش الأمل', 'عيش اللحظة كيف ما كانت'], cover: { id: 'CAEKCVVox08', frame: 'maxresdefault' }, tone: 'ink' },
+  { key: 'culture', name: 'Culture mathématique', ar: 'Galois · Nombre phénix · Philosophie', note: 'Les maths qui donnent envie : un génie mort à 21 ans, 142857, invention ou découverte ?', ids: ['L93mPstfJBA', 'Z_k0jHQ9HVY', 'POAnIwQIw58'], labels: ['Évariste Galois', 'Nombre phénix', 'الرياضيات بين الاختراع والاكتشاف'], cover: { id: 'Z_k0jHQ9HVY', frame: 'maxresdefault' }, tone: 'red' },
+];
