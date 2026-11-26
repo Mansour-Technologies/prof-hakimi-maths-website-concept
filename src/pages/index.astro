@@ -1,0 +1,290 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroPlot from '../components/HeroPlot.astro';
+import PortraitSlot from '../components/PortraitSlot.astro';
+import VideoFacade from '../components/VideoFacade.astro';
+import Exercise from '../components/Exercise.astro';
+import ChapterFigure from '../components/ChapterFigure.astro';
+import Icon from '../components/Icon.astro';
+import { chapters } from '../data/chapters';
+import { videos, fmtDuration, hasArabic } from '../data/videos';
+import { exercises } from '../data/exercises';
+import { identity, links } from '../data/site';
+import { url } from '../lib/url';
+import { tex } from '../lib/tex';
+
+const vidCount = (slug: string) => videos.filter((v) => v.topic === slug).length;
+const featured = videos.find((v) => v.id === '6XTA_EX9w2Y')!;
+const shorts = ['K57PPKXKBHs', 'n8D5n4ufnp4', 'xxG1hjN4r1c', 'M-kjMa0B8Uw', 'ZRcJpzyJT6c', 'L93mPstfJBA'].map((id) => videos.find((v) => v.id === id)!);
+const sample = exercises.find((e) => e.id === 'dv-3')!;
+const totalMinutes = Math.round(videos.reduce((a, v) => a + v.seconds, 0) / 60);
+const s1 = chapters.filter((c) => c.semester === 1);
+const s2 = chapters.filter((c) => c.semester === 2);
+---
+<Base title="Mathématiques 2ᵉ BAC, au tableau" description="Concept de site pour Prof Hakimi maths (Hicham Hakimi) : cours vidéo rangés par chapitre, labo de fonctions, exercices corrigés et préparation à l'examen national du BAC.">
+  <!-- ——— HERO ——— -->
+  <section class="hero board" aria-labelledby="hero-title">
+    <HeroPlot />
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <p class="kicker"><span class="dot"></span><span class="dot dot--o"></span><span class="dot dot--g"></span><span class="dot dot--w"></span> {identity.handle}</p>
+        <h1 id="hero-title" class="hero__name">
+          <span class="hero__first">Hicham</span>
+          <span class="hero__last">Hakimi</span>
+        </h1>
+        <p class="hero__role">Professeur &amp; chercheur en mathématiques — <span class="nowrap">2ᵉ BAC Sciences expérimentales</span>, préparation des concours.</p>
+        <p class="hero__lead">Chaque chapitre du BAC, du tableau jusqu’à la tangente&nbsp;: ses leçons rangées, des exercices corrigés et un labo pour voir les fonctions bouger.</p>
+        <div class="hero__cta">
+          <a class="btn btn--chalk" href={url('cours/')}>Explorer les chapitres <Icon name="arrow" /></a>
+          <a class="btn btn--ghost" href={url('labo/')}>Ouvrir le labo des fonctions</a>
+        </div>
+      </div>
+      <div class="hero__side">
+        <PortraitSlot class="hero__portrait" />
+      </div>
+    </div>
+    <div class="wrap hero__foot">
+      <p class="heroplot__eq" aria-hidden="true">
+  <span class="heroplot__f">f(x) = x³⁄4 − x</span>
+  <span>Tangente en x₀ = <b data-x0>1,50</b></span>
+  <span>y = <b data-eq>0,69x − 1,69</b></span>
+</p>
+      <p class="hero__ar ar" lang="ar">الرياضيات، خطوة بخطوة</p>
+    </div>
+  </section>
+
+  <!-- ——— FACTS STRIP ——— -->
+  <section class="facts" aria-label="Repères">
+    <div class="wrap facts__row">
+      <p><b>{videos.length}</b> vidéos publiées sur sa chaîne, rangées ici par chapitre</p>
+      <p><b>{Math.floor(totalMinutes / 60)} h {String(totalMinutes % 60).padStart(2, '0')}</b> de contenu au tableau</p>
+      <p><b>FR · ع</b> cours en français, explications en arabe et darija</p>
+      <p><b>{chapters.length}</b> chapitres du programme 2ᵉ BAC, cartographiés</p>
+    </div>
+  </section>
+
+  <!-- ——— SOMMAIRE ——— -->
+  <section class="section paper-grid" aria-labelledby="som-title">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="kicker"><span class="dot dot--g"></span> Programme 2ᵉ BAC · Sciences expérimentales</p>
+        <h2 id="som-title">Le sommaire<span class="h-ar" lang="ar">فهرس الدروس</span></h2>
+        <p>Onze chapitres, dans l’ordre du programme. Chaque page réunit l’essentiel, les formules, les vidéos du professeur et des exercices corrigés.</p>
+      </header>
+      <div class="som">
+        {[{ t: 'Premier semestre', list: s1 }, { t: 'Second semestre', list: s2 }].map((g) => (
+          <div class="som__col reveal">
+            <h3 class="som__sem">{g.t} <span>(indicatif)</span></h3>
+            <ol class="som__list">
+              {g.list.map((c) => (
+                <li>
+                  <a class="som__row" href={url(`cours/${c.slug}/`)}>
+                    <span class="som__n">{String(c.n).padStart(2, '0')}</span>
+                    <span class="som__t">{c.fr}<span class="som__ar" lang="ar">{c.ar}</span></span>
+                    <span class="som__v">{vidCount(c.slug) ? `${vidCount(c.slug)} vidéo${vidCount(c.slug) > 1 ? 's' : ''}` : '—'}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+      <p class="som__more reveal"><a class="link-arrow" href={url('cours/')}>Filtrer, chercher et suivre sa progression →</a></p>
+    </div>
+  </section>
+
+  <!-- ——— LAB TEASER ——— -->
+  <section class="section board chalk-grid lab-teaser" aria-labelledby="lab-title">
+    <div class="wrap lab-teaser__grid">
+      <div class="reveal">
+        <p class="kicker"><span class="dot"></span> Signature interactive</p>
+        <h2 id="lab-title" class="lab-teaser__h">Le labo des fonctions</h2>
+        <p class="lab-teaser__p">Choisissez une famille — polynôme, logarithme, exponentielle, homographique, trigonométrique — ou tapez votre propre expression. Réglez <em>a</em>, <em>b</em>, <em>c</em>&nbsp;; faites glisser le point&nbsp;: la courbe de <span set:html={tex("f'")} /> et l’équation de la tangente suivent en direct.</p>
+        <div class="lab-teaser__tex" set:html={tex("(T):\\ y=f'(x_0)\\,(x-x_0)+f(x_0)", true)} />
+        <a class="btn btn--chalk" href={url('labo/')}>Ouvrir le labo <Icon name="arrow" /></a>
+      </div>
+      <figure class="lab-teaser__fig reveal">
+        <ChapterFigure kind="tangent" label="Courbe d’une fonction cubique et sa tangente en un point" />
+        <figcaption class="hand">tangente = meilleure approximation affine</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ——— VIDEOS ——— -->
+  <section class="section" aria-labelledby="vid-title">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="kicker"><span class="dot dot--o"></span> Chaîne officielle · youtube.com/@prof_hakimi_maths</p>
+        <h2 id="vid-title">Au tableau<span class="h-ar" lang="ar">الدروس بالفيديو</span></h2>
+        <p>Les vidéos publiques de sa chaîne, lues ici via le lecteur YouTube sans cookies, uniquement quand vous appuyez sur lecture.</p>
+      </header>
+      <div class="vid-feature reveal">
+        <VideoFacade video={featured} size="lg" />
+        <div class="vid-feature__meta">
+          <p class="kicker">Cours complet · {fmtDuration(featured.seconds)}</p>
+          <h3 class="vid-feature__t mixed" dir="auto">Calcul intégral — partie 1<span class="h-ar" lang="ar">الحساب التكاملي</span></h3>
+          <p>Primitives, intégrale et premières propriétés, expliquées au tableau blanc.</p>
+          <p class="vid-feature__links"><a class="link-arrow" href={url('cours/calcul-integral/')}>Chapitre « Calcul intégral »</a> <a class="link-arrow" href={url('videos/')}>Toute la vidéothèque</a></p>
+        </div>
+      </div>
+      <h3 class="rail-title reveal">Capsules courtes</h3>
+      <ul class="rail" aria-label="Shorts du professeur">
+        {shorts.map((v) => (
+          <li class="rail__item">
+            <VideoFacade video={v} size="short" />
+            <p class="rail__t mixed" dir="auto" lang={hasArabic(v.title) && !/[a-z]{3}/i.test(v.title) ? 'ar' : undefined}>{v.title}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ——— EXAM ——— -->
+  <section class="section paper-grid" aria-labelledby="exam-title">
+    <div class="wrap exam-teaser">
+      <div class="reveal">
+        <p class="kicker"><span class="dot"></span> Centre de préparation</p>
+        <h2 id="exam-title" class="exam-teaser__h">Examen national, <em>sans surprise</em></h2>
+        <p class="exam-teaser__p">Exercices type BAC filtrés par chapitre et difficulté, problèmes guidés, épreuve chronométrée, checklist de révision et bilan de séance. Essayez — la correction est instantanée.</p>
+        <ul class="exam-teaser__list">
+          <li><Icon name="check" /> {exercises.length} exercices originaux corrigés pas à pas</li>
+          <li><Icon name="check" /> Mode chrono avec bilan par chapitre</li>
+          <li><Icon name="check" /> Progression gardée sur cet appareil, sans compte</li>
+        </ul>
+        <a class="btn" href={url('examen/')}>Entrer dans le centre <Icon name="arrow" /></a>
+        <p class="demo-tag" style="margin-top:1rem">Contenu de démonstration</p>
+      </div>
+      <div class="reveal">
+        <Exercise ex={sample} index={1} showChapter />
+      </div>
+    </div>
+  </section>
+
+  <!-- ——— ABOUT ——— -->
+  <section class="section board about" aria-labelledby="about-title">
+    <div class="wrap about__grid">
+      <div class="reveal">
+        <p class="kicker"><span class="dot dot--w"></span> Le professeur</p>
+        <h2 id="about-title" class="about__h">Rigueur au tableau, <em>culture</em> autour</h2>
+      </div>
+      <div class="about__body reveal">
+        <blockquote class="about__quote">
+          <p lang="ar" class="ar">و أنت في طريقك للبحث عن حياة لا تنسى أن تعيش</p>
+          <footer>— première ligne de sa bio Instagram</footer>
+        </blockquote>
+        <dl class="about__facts">
+          <div><dt>Profil</dt><dd>{identity.roles.join(' · ')} <small>(bio Instagram)</small></dd></div>
+          <div><dt>Niveaux</dt><dd>2ᵉ BAC Sciences expérimentales (PC) — corrections du manuel « Al Moufid » — et préparation des concours post-bac.</dd></div>
+          <div><dt>Langues</dt><dd>Mathématiques en français, explications et motivation en arabe et en darija.</dd></div>
+          <div><dt>Au-delà du programme</dt><dd>Évariste Galois, le « nombre phénix », la philosophie des mathématiques — invention ou découverte&nbsp;?</dd></div>
+        </dl>
+        <p class="about__links">
+          <a class="btn btn--ghost btn--sm" href={links.instagram} target="_blank" rel="noopener"><Icon name="ig" /> Instagram<span class="sr-only"> (nouvel onglet)</span></a>
+          <a class="btn btn--ghost btn--sm" href={links.youtube} target="_blank" rel="noopener"><Icon name="yt" /> YouTube<span class="sr-only"> (nouvel onglet)</span></a>
+          <a class="btn btn--ghost btn--sm" href={links.threads} target="_blank" rel="noopener"><Icon name="threads" /> Threads<span class="sr-only"> (nouvel onglet)</span></a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* HERO */
+  .hero { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(2.2rem, 1.5rem + 4vw, 5rem) 1.6rem; }
+  .hero::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(90deg, rgba(17, 25, 21, 0.92) 0%, rgba(17, 25, 21, 0.55) 42%, rgba(17, 25, 21, 0) 70%); }
+  .hero__grid { position: relative; z-index: 2; display: grid; gap: 2rem; align-items: end; }
+  @media (min-width: 900px) { .hero__grid { grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr); gap: 4rem; min-height: min(72vh, 640px); } }
+  .hero__name { font-weight: 400; font-size: clamp(3.6rem, 1.6rem + 9vw, 9.2rem); line-height: 0.88; letter-spacing: -0.035em; margin: 1rem 0 1.2rem; font-variation-settings: 'opsz' 144; }
+  .hero__name span { display: block; }
+  .hero__last { font-style: italic; color: var(--chalk-yellow); padding-left: 0.42em; }
+  .hero__role { font-size: var(--step-1); color: var(--chalk); max-width: 34rem; margin-bottom: 0.8rem; font-weight: 500; }
+  .hero__lead { font-size: var(--step-0); color: var(--chalk-2); max-width: 32rem; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+  .hero__side { align-self: center; }
+  .hero__portrait { max-width: 380px; margin-left: auto; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8); }
+  .hero__foot { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-top: 2.2rem; padding-top: 1rem; border-top: 1px solid rgba(236, 238, 230, 0.12); }
+  .hero__ar { margin: 0; font-size: 1.35rem; color: var(--chalk-2); }
+  .nowrap { white-space: nowrap; }
+  .heroplot__eq { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 0.25rem 1.2rem; margin: 0; font-family: var(--f-math); font-size: 1.05rem; color: var(--chalk-2); }
+  .heroplot__eq b { font-weight: 400; color: var(--chalk-yellow); font-variant-numeric: tabular-nums; }
+  .heroplot__f { color: var(--chalk); font-style: italic; }
+
+  @media (max-width: 899px) {
+    .hero::after { background: linear-gradient(180deg, rgba(17, 25, 21, 0.5), rgba(17, 25, 21, 0.86) 55%, rgba(17, 25, 21, 0.97)); }
+    .hero__portrait { max-width: none; aspect-ratio: 16 / 10; margin: 0; }
+    .hero__cta .btn { flex: 1 1 100%; }
+    .hero__foot { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* FACTS */
+  .facts { background: var(--board-2); color: var(--chalk-2); border-top: 1px solid var(--board-3); }
+  .facts__row { display: grid; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) { .facts__row { grid-template-columns: repeat(4, 1fr); } }
+  .facts p { margin: 0; padding: 1.2rem 1rem 1.2rem 0; font-size: 0.86rem; line-height: 1.4; border-right: 1px solid var(--board-3); padding-left: 1rem; }
+  .facts p:first-child { padding-left: 0; }
+  @media (max-width: 899px) { .facts p { border-right: 0; border-bottom: 1px solid var(--board-3); padding-left: 0; } .facts p:nth-child(odd) { padding-right: 1rem; border-right: 1px solid var(--board-3); } .facts p:nth-child(even) { padding-left: 1rem; } }
+  .facts b { display: block; font-family: var(--f-display); font-weight: 500; font-size: 1.7rem; color: var(--chalk); margin-bottom: 0.15rem; }
+
+  /* SOMMAIRE */
+  .som { display: grid; gap: 2.5rem; }
+  @media (min-width: 960px) { .som { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .som__sem { font-family: var(--f-text); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); }
+  .som__sem span { color: var(--ink-3); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
+  .som__list { list-style: none; margin: 0; padding: 0; }
+  .som__row { display: grid; grid-template-columns: 3rem 1fr auto; align-items: baseline; gap: 0.8rem; padding: 1rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; background: linear-gradient(var(--paper), var(--paper)); position: relative; }
+  .som__n { font-family: var(--f-display); font-size: 1.6rem; color: var(--ink-3); font-variant-numeric: tabular-nums; font-style: italic; }
+  .som__t { font-family: var(--f-display); font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem); line-height: 1.2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.1rem 1rem; }
+  .som__ar { font-family: var(--f-ar); font-size: 1.05rem; color: var(--ink-3); direction: rtl; }
+  .som__v { font-size: 0.78rem; color: var(--ink-3); white-space: nowrap; min-width: 4.5rem; text-align: right; }
+  .som__row::after { content: ''; position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--red); transition: width 0.45s var(--ease); }
+  .som__row:hover::after, .som__row:focus-visible::after { width: 100%; }
+  .som__row:hover .som__n { color: var(--red); }
+  .som__more { margin-top: 2rem; }
+
+  /* LAB TEASER */
+  .lab-teaser__grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 900px) { .lab-teaser__grid { grid-template-columns: 1fr 1.1fr; gap: 4rem; } }
+  .lab-teaser__h { font-size: var(--step-4); margin: 0.8rem 0 1rem; }
+  .lab-teaser__p { color: var(--chalk-2); font-size: var(--step-1); max-width: 34rem; }
+  .lab-teaser__tex { color: var(--chalk); font-size: 1.15rem; margin: 1rem 0 1.6rem; overflow-x: auto; }
+  .lab-teaser__fig { margin: 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--board-3); background: var(--board-2); }
+  .lab-teaser__fig figcaption { color: var(--chalk-yellow); font-size: 1.4rem; margin-top: 0.4rem; text-align: right; }
+
+  /* VIDEOS */
+  .vid-feature { display: grid; gap: 1.5rem; align-items: center; margin-bottom: 3rem; }
+  @media (min-width: 900px) { .vid-feature { grid-template-columns: 1.5fr 1fr; gap: 3rem; } }
+  .vid-feature__t { font-size: var(--step-3); margin: 0.6rem 0 0.8rem; }
+  .vid-feature__meta p { color: var(--ink-2); }
+  .vid-feature__links { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+  .rail-title { font-family: var(--f-text); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-2); margin-bottom: 1rem; }
+  .rail { list-style: none; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 0.6rem; display: grid; grid-auto-flow: column; grid-auto-columns: clamp(150px, 42vw, 190px); gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .rail__item { scroll-snap-align: start; }
+  .rail__t { font-size: 0.86rem; line-height: 1.35; margin: 0.55rem 0 0; color: var(--ink-2); }
+
+  /* EXAM */
+  .exam-teaser { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 960px) { .exam-teaser { grid-template-columns: 1fr 1.15fr; gap: 4rem; } }
+  .exam-teaser__h { font-size: var(--step-4); margin: 0.8rem 0 1rem; }
+  .exam-teaser__h em, .about__h em { color: var(--red); }
+  .exam-teaser__p { font-size: var(--step-1); color: var(--ink-2); }
+  .exam-teaser__list { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: 0.5rem; }
+  .exam-teaser__list li { display: flex; gap: 0.6rem; align-items: center; }
+  .exam-teaser__list svg { width: 20px; height: 20px; color: var(--green); flex: none; }
+
+  /* ABOUT */
+  .about__grid { display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .about__grid { grid-template-columns: 1fr 1.3fr; gap: 4rem; } }
+  .about__h { font-size: var(--step-4); margin-top: 0.8rem; }
+  .about__h em { color: var(--red-hi); }
+  .about__quote { margin: 0 0 2rem; padding: 0 0 1.5rem; border-bottom: 1px solid var(--board-3); }
+  .about__quote p { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem); line-height: 1.6; color: var(--chalk); margin: 0 0 0.4rem; }
+  .about__quote footer { font-size: 0.85rem; color: var(--chalk-3); }
+  .about__facts { margin: 0; display: grid; gap: 1.1rem; }
+  .about__facts div { display: grid; gap: 0.2rem; }
+  @media (min-width: 600px) { .about__facts div { grid-template-columns: 11rem 1fr; gap: 1rem; } }
+  .about__facts dt { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--chalk-3); padding-top: 0.2rem; }
+  .about__facts dd { margin: 0; color: var(--chalk); }
+  .about__facts small { color: var(--chalk-3); }
+  .about__links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem; }
+</style>
+

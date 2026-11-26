@@ -1,0 +1,145 @@
+---
+import Base from '../../layouts/Base.astro';
+import VideoFacade from '../../components/VideoFacade.astro';
+import Icon from '../../components/Icon.astro';
+import { chapters } from '../../data/chapters';
+import { videos, collections, fmtDuration } from '../../data/videos';
+import { url } from '../../lib/url';
+
+const topics = [
+  ...chapters.filter((c) => videos.some((v) => v.topic === c.slug)).map((c) => ({ key: c.slug, fr: c.fr, ar: c.ar, chapter: c })),
+  ...Object.entries(collections).map(([key, c]) => ({ key, fr: c.fr, ar: c.ar, chapter: undefined })),
+];
+const groups = topics.map((t) => ({ ...t, list: videos.filter((v) => v.topic === t.key).sort((a, b) => (a.kind === b.kind ? a.date.localeCompare(b.date) : a.kind === 'cours' ? -1 : 1)) }));
+const fmtDate = (d: string) => new Date(d + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title="Vidéothèque" active="videos/" description="Les vidéos publiques de la chaîne YouTube Prof Hakimi maths, rangées par chapitre du 2ᵉ BAC et par thème, avec lecteur YouTube sans cookies chargé au clic.">
+  <section class="page-hero board chalk-grid">
+    <div class="wrap">
+      <p class="kicker"><span class="dot dot--o"></span> Chaîne officielle · @prof_hakimi_maths</p>
+      <h1>La <em>vidéothèque</em></h1>
+      <p class="lead">{videos.length} vidéos publiques de sa chaîne, rangées par chapitre. Rien ne se charge depuis YouTube tant que vous n’appuyez pas sur lecture (lecteur youtube-nocookie, sans lecture automatique).</p>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="vtools" data-vtools>
+        <div class="field vtools__search">
+          <label for="vq">Rechercher un titre</label>
+          <input class="input" id="vq" type="search" placeholder="ex. ln, complexes, concours…" autocomplete="off" data-vq />
+        </div>
+        <div class="field">
+          <span class="label" id="lbl-kind">Format</span>
+          <div class="chips" role="group" aria-labelledby="lbl-kind">
+            <button type="button" class="chip" aria-pressed="true" data-kind="all">Tout</button>
+            <button type="button" class="chip" aria-pressed="false" data-kind="cours">Cours longs</button>
+            <button type="button" class="chip" aria-pressed="false" data-kind="short">Capsules</button>
+            <button type="button" class="chip" aria-pressed="false" data-kind="saved">Enregistrées</button>
+          </div>
+        </div>
+        <div class="field vtools__topics">
+          <span class="label" id="lbl-topic">Chapitre ou thème</span>
+          <div class="scroll-x" role="group" aria-labelledby="lbl-topic">
+            <button type="button" class="chip" aria-pressed="true" data-topic="all">Tous</button>
+            {topics.map((t) => <button type="button" class="chip" aria-pressed="false" data-topic={t.key}>{t.fr}</button>)}
+          </div>
+        </div>
+      </div>
+      <p class="count" role="status" aria-live="polite" data-vcount>{videos.length} vidéos</p>
+
+      {groups.map((g) => (
+        <section class="vgroup" data-group={g.key} aria-labelledby={`g-${g.key}`}>
+          <header class="vgroup__head">
+            <h2 id={`g-${g.key}`}>{g.chapter && <span class="vgroup__n">{String(g.chapter.n).padStart(2, '0')}</span>}{g.fr} <span class="vgroup__ar" lang="ar">{g.ar}</span></h2>
+            {g.chapter && <a class="link-arrow" href={url(`cours/${g.key}/`)}>Fiche du chapitre</a>}
+          </header>
+          <ul class="vgrid">
+            {g.list.map((v) => (
+              <li class={`vcell vcell--${v.kind}`} data-vid={v.id} data-kind={v.kind} data-title={v.title.toLowerCase()}>
+                <VideoFacade video={v} size={v.kind === 'short' ? 'short' : 'md'} />
+                <div class="vcell__meta">
+                  <p class="vcell__t mixed" dir="auto">{v.title}</p>
+                  <p class="vcell__sub">{v.kind === 'cours' ? 'Cours' : 'Capsule'} · {fmtDuration(v.seconds)} · {fmtDate(v.date)}</p>
+                  <button type="button" class="bm" data-bookmark={`vid:${v.id}`} aria-pressed="false" data-on="Enregistrée" data-off="Enregistrer"><Icon name="bookmark" /><span data-bm-label>Enregistrer</span></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <p class="empty" data-vempty hidden>Aucune vidéo ne correspond à ces filtres.</p>
+      <p class="src">Titres, durées et dates tels que publiés sur <a href="https://www.youtube.com/@prof_hakimi_maths" target="_blank" rel="noopener">youtube.com/@prof_hakimi_maths</a> (relevé du 26 novembre 2026). Une vidéo humoristique n’a pas été classée.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .vtools { display: grid; gap: 1rem; padding-bottom: 1.2rem; border-bottom: 2px solid var(--ink); }
+  @media (min-width: 900px) { .vtools { grid-template-columns: 1fr auto; align-items: end; } .vtools__topics { grid-column: 1 / -1; } .vtools .scroll-x { flex-wrap: wrap; margin: 0; padding: 0; } }
+  .count { margin: 1rem 0 0; font-size: 0.88rem; color: var(--ink-3); }
+  .vgroup { padding-block: 2.2rem; border-bottom: 1px solid var(--rule); }
+  .vgroup__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 1.5rem; margin-bottom: 1.3rem; }
+  .vgroup__head h2 { font-size: var(--step-2); }
+  .vgroup__n { font-style: italic; color: var(--red); margin-right: 0.5rem; }
+  .vgroup__ar { font-family: var(--f-ar); font-size: 0.7em; color: var(--ink-3); margin-left: 0.4rem; }
+  .vgrid { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.4rem 1.2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 760px) { .vgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .vgrid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .vcell--cours { grid-column: 1 / -1; display: grid; gap: 1rem; }
+  @media (min-width: 760px) { .vcell--cours { grid-column: span 2; } }
+  @media (min-width: 1100px) { .vcell--cours { grid-column: span 3; } }
+  .vcell__t { font-size: 0.95rem; line-height: 1.35; margin: 0.55rem 0 0.2rem; font-weight: 500; }
+  .vcell--cours .vcell__t { font-family: var(--f-display); font-size: 1.2rem; font-weight: 400; }
+  .vcell__sub { font-size: 0.78rem; color: var(--ink-3); margin: 0 0 0.3rem; }
+  .bm { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: 0; padding: 0.4rem 0; min-height: 40px; color: var(--ink-2); font-size: 0.85rem; font-weight: 600; }
+  .bm svg { width: 18px; height: 18px; }
+  .bm[aria-pressed='true'] { color: var(--red); }
+  .bm[aria-pressed='true'] svg { fill: currentColor; }
+  .empty { padding: 2rem 0; }
+  .src { font-size: 0.82rem; color: var(--ink-3); margin-top: 2rem; }
+</style>
+
+<script>
+  import { load } from '../../lib/store';
+  const cells = Array.from(document.querySelectorAll<HTMLElement>('.vcell'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-group]'));
+  const q = document.querySelector<HTMLInputElement>('[data-vq]')!;
+  let kind = 'all', topic = 'all';
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function apply() {
+    const term = norm(q.value.trim());
+    const saved = new Set(load().bookmarks);
+    let n = 0;
+    for (const g of groups) {
+      let gn = 0;
+      const gOk = topic === 'all' || g.dataset.group === topic;
+      g.querySelectorAll<HTMLElement>('.vcell').forEach((c) => {
+        let show = gOk && (!term || norm(c.dataset.title!).includes(term));
+        if (kind === 'cours' || kind === 'short') show &&= c.dataset.kind === kind;
+        if (kind === 'saved') show &&= saved.has(`vid:${c.dataset.vid}`);
+        c.hidden = !show;
+        if (show) gn++;
+      });
+      g.hidden = gn === 0;
+      n += gn;
+    }
+    document.querySelector('[data-vcount]')!.textContent = `${n} vidéo${n > 1 ? 's' : ''}`;
+    document.querySelector<HTMLElement>('[data-vempty]')!.hidden = n > 0;
+  }
+  const bind = (attr: string, set: (v: string) => void) =>
+    document.querySelectorAll<HTMLButtonElement>(`button[data-${attr}]`).forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll(`button[data-${attr}]`).forEach((x) => x.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      set(b.getAttribute(`data-${attr}`)!);
+      apply();
+    }));
+  bind('kind', (v) => (kind = v));
+  bind('topic', (v) => (topic = v));
+  q.addEventListener('input', apply);
+  const t = new URLSearchParams(location.search).get('t');
+  if (t) document.querySelector<HTMLButtonElement>(`button[data-topic="${CSS.escape(t)}"]`)?.click();
+  window.addEventListener('phm:change', () => kind === 'saved' && apply());
+  apply();
+  void cells;
+</script>

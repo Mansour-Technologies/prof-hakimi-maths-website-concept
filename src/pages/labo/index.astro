@@ -1,0 +1,182 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { families } from '../../lib/mathlab';
+import { tex } from '../../lib/tex';
+import { url } from '../../lib/url';
+---
+<Base title="Labo des fonctions" active="labo/" description="Labo interactif : tracez une fonction, réglez ses paramètres, faites glisser le point et lisez en direct f′ et l'équation de la tangente. Fonctionne au doigt.">
+  <section class="lab-hero board">
+    <div class="wrap">
+      <p class="kicker"><span class="dot"></span> Signature interactive</p>
+      <h1>Le labo <em>des fonctions</em></h1>
+      <p class="lead">Une courbe, sa dérivée, une tangente qui glisse. Réglez les paramètres et regardez l’équation <span set:html={tex("y=f'(x_0)(x-x_0)+f(x_0)")} /> se réécrire.</p>
+    </div>
+  </section>
+
+  <section class="lab board" data-lab aria-label="Laboratoire de fonctions">
+    <div class="wrap lab__grid">
+      <div class="lab__stage">
+        <div class="lab__canvaswrap">
+          <canvas class="lab__canvas" data-canvas tabindex="0" role="img"
+            aria-label="Graphique interactif. Flèches gauche et droite : déplacer le point. Plus et moins : zoomer."
+            aria-describedby="lab-readout"></canvas>
+          <div class="lab__zoom" role="group" aria-label="Vue du graphique">
+            <button type="button" class="icon-btn" data-zoom="in" aria-label="Zoomer"><Icon name="plus" /></button>
+            <button type="button" class="icon-btn" data-zoom="out" aria-label="Dézoomer"><Icon name="minus" /></button>
+            <button type="button" class="icon-btn" data-view-reset aria-label="Recentrer la vue"><Icon name="reset" /></button>
+          </div>
+          <p class="lab__hint hand" aria-hidden="true">glissez le point rouge · pincez pour zoomer</p>
+        </div>
+        <div class="lab__readout" id="lab-readout">
+          <p class="sr-only" aria-live="polite" data-sr></p>
+          <div class="lab__tan"><span class="lab__tan-l">Tangente</span><span data-tex-tan></span></div>
+          <dl class="lab__vals">
+            <div><dt>x₀</dt><dd data-v-x0></dd></div>
+            <div><dt>f(x₀)</dt><dd data-v-f></dd></div>
+            <div><dt>f′(x₀)</dt><dd data-v-df></dd></div>
+          </dl>
+          <p class="lab__note" data-note></p>
+        </div>
+      </div>
+
+      <div class="lab__panel">
+        <fieldset class="lab__fam">
+          <legend class="label">Famille de fonctions</legend>
+          <div class="fam-grid">
+            {families.map((f, i) => (
+              <label class="fam"><input type="radio" name="family" value={f.id} checked={i === 0} /><span>{f.label}</span></label>
+            ))}
+            <label class="fam"><input type="radio" name="family" value="free" /><span>Expression libre</span></label>
+          </div>
+        </fieldset>
+
+        <div class="lab__formula">
+          <p class="label">Fonction tracée</p>
+          <div class="lab__f" data-tex-f></div>
+          <div class="lab__df" data-tex-df></div>
+        </div>
+
+        <div class="lab__free" data-free hidden>
+          <label class="label" for="expr">f(x) =</label>
+          <div class="lab__exprrow">
+            <input class="input lab__expr" id="expr" data-expr value="x^3/4 - x" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="expr-help expr-err" />
+            <button class="btn btn--chalk btn--sm" type="button" data-expr-go>Tracer</button>
+          </div>
+          <p class="lab__help" id="expr-help">Opérations + − * / ^, parenthèses, <code>ln exp sqrt abs sin cos tan</code>, constantes <code>pi</code> et <code>e</code>. Ex. : <button type="button" class="ex-chip" data-sample="x*ln(x) - x">x ln x − x</button> <button type="button" class="ex-chip" data-sample="x*exp(-x)">x e⁻ˣ</button> <button type="button" class="ex-chip" data-sample="sqrt(x^2+x) - x">√(x²+x) − x</button></p>
+          <p class="lab__err" id="expr-err" role="alert" data-expr-err></p>
+        </div>
+
+        <div class="lab__params" data-params>
+          {['a', 'b', 'c', 'd'].map((k) => (
+            <div class="param" data-param={k}>
+              <label for={`p-${k}`}><i>{k}</i></label>
+              <input type="range" id={`p-${k}`} min="-3" max="3" step="0.1" value="0" data-slider={k} />
+              <output for={`p-${k}`} data-out={k}>0</output>
+            </div>
+          ))}
+          <div class="param param--x0">
+            <label for="p-x0"><i>x</i><sub>0</sub></label>
+            <input type="range" id="p-x0" min="-5" max="5" step="0.01" value="1" data-x0 />
+            <output for="p-x0" data-out-x0>1</output>
+          </div>
+        </div>
+
+        <div class="lab__toggles">
+          <label class="tog"><input type="checkbox" data-show-df checked /> <span>Courbe de f′</span></label>
+          <label class="tog"><input type="checkbox" data-show-tan checked /> <span>Tangente</span></label>
+        </div>
+        <button type="button" class="btn btn--ghost lab__reset" data-reset><Icon name="reset" /> Réinitialiser le labo</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight paper-grid">
+    <div class="wrap lab-notes">
+      <div>
+        <h2>Comment c’est calculé</h2>
+        <p>Pour les familles, <span set:html={tex("f'")} /> est la dérivée exacte (formule du cours). Pour une expression libre, le labo utilise une différence centrée à cinq points, d’erreur en <span set:html={tex('O(h^4)')} /> — et vous indique l’écart avec la dérivée exacte quand elle est connue.</p>
+        <p>L’expression libre est lue par un petit analyseur mathématique écrit pour ce site&nbsp;: aucun code n’est exécuté.</p>
+      </div>
+      <div>
+        <h2>Pour aller plus loin</h2>
+        <p>Retrouvez la tangente dans le chapitre <a href={url('cours/derivation/')}>Dérivation et fonction réciproque</a>, puis entraînez-vous avec les exercices corrigés du <a href={url('examen/')}>centre examen</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lab-hero { padding-block: clamp(2rem, 1.5rem + 3vw, 4rem) 1rem; }
+  .lab-hero h1 { font-size: var(--step-5); font-weight: 400; }
+  .lab-hero h1 em { color: var(--chalk-yellow); }
+  .lab-hero .lead { color: var(--chalk-2); font-size: var(--step-1); max-width: 44rem; margin-top: 1rem; }
+  .lab { padding-block: 1rem clamp(3rem, 2rem + 4vw, 6rem); }
+  .lab__grid { display: grid; gap: 1.5rem; }
+  @media (min-width: 1000px) { .lab__grid { grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr); gap: 2rem; align-items: start; } }
+  .lab__canvaswrap { position: relative; border: 1px solid var(--board-3); background: var(--board-2); }
+  .lab__canvas { width: 100%; height: min(70vh, 620px); touch-action: none; cursor: crosshair; }
+  @media (max-width: 999px) { .lab__canvas { height: min(58vh, 440px); } }
+  .lab__canvas:focus-visible { outline-offset: -3px; }
+  .lab__zoom { position: absolute; top: 0.6rem; right: 0.6rem; display: flex; gap: 0.4rem; }
+  .lab__zoom .icon-btn { background: rgba(17, 25, 21, 0.85); }
+  .lab__zoom svg { width: 20px; height: 20px; }
+  .lab__hint { position: absolute; left: 0.8rem; bottom: 0.4rem; margin: 0; color: var(--chalk-3); font-size: 1.15rem; pointer-events: none; }
+  .lab__readout { display: grid; gap: 0.8rem; padding: 1rem 1.1rem; border: 1px solid var(--board-3); border-top: 0; background: #0d1411; }
+  .lab__tan { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1rem; font-size: 1.35rem; color: var(--chalk-yellow); min-height: 2.2rem; }
+  .lab__tan-l { font-family: var(--f-hand); color: var(--chalk-3); font-size: 1.3rem; }
+  .lab__vals { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .lab__vals dt { font-size: 0.75rem; color: var(--chalk-3); font-family: var(--f-math); font-style: italic; }
+  .lab__vals dd { margin: 0; font-family: var(--f-math); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .lab__note { margin: 0; font-size: 0.86rem; color: var(--chalk-2); }
+  .lab__panel { display: grid; gap: 1.3rem; padding: 1.2rem; border: 1px solid var(--board-3); background: var(--board-2); }
+  .lab__panel .label { color: var(--chalk-3); }
+  .lab__fam { border: 0; padding: 0; margin: 0; }
+  .lab__fam legend { margin-bottom: 0.5rem; }
+  .fam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+  .fam { position: relative; }
+  .fam input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .fam span { display: flex; align-items: center; min-height: 44px; padding: 0.4rem 0.7rem; border: 1px solid var(--board-3); font-size: 0.88rem; color: var(--chalk-2); border-radius: var(--radius); }
+  .fam input:checked + span { border-color: var(--chalk-yellow); color: var(--chalk); background: rgba(243, 212, 107, 0.08); box-shadow: inset 3px 0 0 var(--chalk-yellow); }
+  .fam input:focus-visible + span { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .lab__formula { border-top: 1px solid var(--board-3); padding-top: 1rem; }
+  .lab__f { font-size: 1.3rem; min-height: 2.4rem; overflow-x: auto; }
+  .lab__f :global(.lab__code) { font-size: 1.05rem; color: var(--chalk); word-break: break-all; }
+  .lab__df { font-size: 1rem; color: var(--blue-hi); min-height: 1.8rem; overflow-x: auto; }
+  .lab__exprrow { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
+  .lab__expr { background: #0d1411; color: var(--chalk); border-color: var(--board-3); font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: 1rem; }
+  .lab__expr[aria-invalid='true'] { border-color: var(--red-hi); }
+  .lab__help { font-size: 0.82rem; color: var(--chalk-3); margin: 0.5rem 0 0; line-height: 1.8; }
+  .lab__help code { color: var(--chalk-2); }
+  .ex-chip { background: none; border: 1px solid var(--board-3); color: var(--chalk-2); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.8rem; min-height: 32px; }
+  .lab__err { color: var(--red-hi); font-size: 0.88rem; margin: 0.4rem 0 0; min-height: 1.2em; }
+  .lab__params { display: grid; gap: 0.3rem; }
+  .param { display: grid; grid-template-columns: 2rem 1fr 3.2rem; align-items: center; gap: 0.7rem; min-height: 48px; }
+  .param[hidden] { display: none; }
+  .param label { font-family: var(--f-math); font-size: 1.3rem; color: var(--chalk); }
+  .param output { font-family: var(--f-math); text-align: right; font-variant-numeric: tabular-nums; color: var(--chalk-yellow); }
+  .param--x0 { border-top: 1px solid var(--board-3); padding-top: 0.5rem; }
+  .param--x0 output { color: var(--red-hi); }
+  input[type='range'] { -webkit-appearance: none; appearance: none; width: 100%; height: 32px; background: transparent; cursor: pointer; }
+  input[type='range']::-webkit-slider-runnable-track { height: 3px; background: var(--board-3); border-radius: 3px; }
+  input[type='range']::-moz-range-track { height: 3px; background: var(--board-3); border-radius: 3px; }
+  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--chalk); margin-top: -11.5px; border: 3px solid var(--board-2); box-shadow: 0 0 0 1px var(--chalk-3); }
+  input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--chalk); border: 3px solid var(--board-2); }
+  .param--x0 input[type='range']::-webkit-slider-thumb { background: var(--red-hi); }
+  .param--x0 input[type='range']::-moz-range-thumb { background: var(--red-hi); }
+  .lab__toggles { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+  .tog { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; color: var(--chalk-2); font-size: 0.92rem; cursor: pointer; }
+  .tog input { width: 1.2rem; height: 1.2rem; accent-color: var(--chalk-yellow); }
+  .lab__reset { justify-self: start; }
+  .lab-notes { display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .lab-notes { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .lab-notes h2 { font-size: var(--step-2); margin-bottom: 0.8rem; }
+  .lab-notes p { color: var(--ink-2); }
+  @media (max-width: 999px) {
+    .lab__stage { position: relative; }
+  }
+</style>
+
+<script>
+  import '../../scripts/lab';
+</script>

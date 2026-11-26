@@ -1,0 +1,201 @@
+---
+import Base from '../../layouts/Base.astro';
+import ChapterFigure from '../../components/ChapterFigure.astro';
+import VideoFacade from '../../components/VideoFacade.astro';
+import Exercise from '../../components/Exercise.astro';
+import Icon from '../../components/Icon.astro';
+import ChMeta from '../../components/ChMeta.astro';
+import { chapters, type Chapter } from '../../data/chapters';
+import { videos, fmtDuration } from '../../data/videos';
+import { exercisesFor } from '../../data/exercises';
+import { tx, tex } from '../../lib/tex';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return chapters.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props as { c: Chapter };
+const vids = videos.filter((v) => v.topic === c.slug).sort((a, b) => (a.kind === b.kind ? a.date.localeCompare(b.date) : a.kind === 'cours' ? -1 : 1));
+const exs = exercisesFor(c.slug);
+const i = chapters.indexOf(c);
+const prev = chapters[i - 1];
+const next = chapters[i + 1];
+---
+<Base title={`${c.fr} — 2ᵉ BAC`} active="cours/" description={`${c.fr} (${c.ar}) : l'essentiel, les formules clés, les vidéos de Prof Hakimi et des exercices corrigés — concept de démonstration.`}>
+  <section class="page-hero board chalk-grid ch-hero" data-chapter={c.slug}>
+    <div class="wrap ch-hero__grid">
+      <div>
+        <nav aria-label="Fil d’Ariane" class="crumbs"><a href={url('cours/')}>Chapitres</a> <span aria-hidden="true">/</span> <span>Chapitre {c.n}</span></nav>
+        <p class="ch-hero__n" aria-hidden="true">{String(c.n).padStart(2, '0')}</p>
+        <h1>{c.fr}<span class="h-ar" lang="ar">{c.ar}</span></h1>
+        <p class="lead">{c.hook}</p>
+        <div class="ch-actions">
+          <button type="button" class="btn btn--chalk btn--sm" data-bookmark={`ch:${c.slug}`} data-on="Enregistré" data-off="Enregistrer" aria-pressed="false"><Icon name="bookmark" /><span data-bm-label>Enregistrer</span></button>
+          <button type="button" class="btn btn--ghost btn--sm" data-master aria-pressed="false"><Icon name="check" /><span data-master-label>Marquer comme maîtrisé</span></button>
+        </div>
+        <div class="ch-progress">
+          <div class="meter"><span data-meter></span></div>
+          <p data-progress-text role="status" aria-live="polite">Progression : 0 %</p>
+        </div>
+      </div>
+      <figure class="ch-hero__fig"><ChapterFigure kind={c.figure} /></figure>
+    </div>
+  </section>
+
+  <div class="paper-grid">
+    <div class="wrap ch-layout">
+      <aside class="ch-toc" aria-label="Sur cette page">
+        <ol>
+          <li><a href="#essentiel">L’essentiel</a></li>
+          <li><a href="#formules">Formules clés</a></li>
+          <li><a href="#objectifs">À maîtriser</a></li>
+          <li><a href="#videos">Au tableau</a></li>
+          <li><a href="#exercices">S’entraîner</a></li>
+        </ol>
+      </aside>
+      <div class="ch-main">
+        <section id="essentiel" class="ch-sec">
+          <h2>L’essentiel</h2>
+          <p class="ch-summary" set:html={tx(c.summary)} />
+          <p class="demo-tag">Résumé original de démonstration</p>
+        </section>
+
+        <section id="formules" class="ch-sec">
+          <h2>Formules clés</h2>
+          <dl class="formulas">
+            {c.formulas.map((f) => (
+              <div class="formula"><dt>{f.label}</dt><dd set:html={tex(f.tex, true)} /></div>
+            ))}
+          </dl>
+        </section>
+
+        <section id="objectifs" class="ch-sec">
+          <h2>À maîtriser</h2>
+          <ul class="checks" data-checks={c.slug}>
+            {c.checkpoints.map((t, k) => (
+              <li><label><input type="checkbox" value={String(k)} /><span>{t}</span></label></li>
+            ))}
+          </ul>
+        </section>
+
+        <section id="videos" class="ch-sec">
+          <h2>Au tableau avec Prof Hakimi</h2>
+          {vids.length ? (
+            <ul class="vlist">
+              {vids.map((v) => (
+                <li class={`vlist__item vlist__item--${v.kind}`}>
+                  <VideoFacade video={v} size={v.kind === 'short' ? 'short' : 'md'} />
+                  <div class="vlist__meta">
+                    <p class="vlist__kind">{v.kind === 'cours' ? 'Cours / correction' : 'Capsule'} · {fmtDuration(v.seconds)}</p>
+                    <p class="vlist__t mixed" dir="auto">{v.title}</p>
+                    <button type="button" class="btn btn--ghost btn--sm" data-bookmark={`vid:${v.id}`} data-on="Enregistrée" data-off="Enregistrer" aria-pressed="false"><Icon name="bookmark" /><span data-bm-label>Enregistrer</span></button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="novid">Aucune vidéo publique sur ce chapitre pour l’instant sur la chaîne <a href="https://www.youtube.com/@prof_hakimi_maths" target="_blank" rel="noopener">@prof_hakimi_maths</a>. L’emplacement est prêt : chaque nouvelle leçon publiée viendra s’ajouter ici.</p>
+          )}
+        </section>
+
+        <section id="exercices" class="ch-sec">
+          <h2>S’entraîner</h2>
+          <p class="demo-tag">Exercices originaux de démonstration</p>
+          <div class="exs">
+            {exs.map((e, k) => <Exercise ex={e} index={k + 1} />)}
+          </div>
+        </section>
+
+        <nav class="pager" aria-label="Chapitres voisins">
+          {prev ? <a href={url(`cours/${prev.slug}/`)} rel="prev"><small>← Chapitre {prev.n}</small>{prev.fr}</a> : <span></span>}
+          {next ? <a href={url(`cours/${next.slug}/`)} rel="next" class="pager__next"><small>Chapitre {next.n} →</small>{next.fr}</a> : <a href={url('examen/')} class="pager__next"><small>Ensuite →</small>Centre examen national</a>}
+        </nav>
+      </div>
+    </div>
+  </div>
+  <ChMeta />
+</Base>
+
+<style>
+  .crumbs { font-size: 0.85rem; color: var(--chalk-3); margin-bottom: 1rem; }
+  .crumbs a { color: var(--chalk-2); }
+  .ch-hero__grid { display: grid; gap: 2rem; align-items: center; position: relative; }
+  @media (min-width: 900px) { .ch-hero__grid { grid-template-columns: 1.3fr 1fr; gap: 4rem; } }
+  .ch-hero h1 { font-size: var(--step-4); }
+  .ch-hero__n { font-family: var(--f-display); font-style: italic; font-size: 1.3rem; color: var(--red-hi); margin: 0 0 0.3rem; }
+  .ch-hero__fig { margin: 0; padding: 1.5rem; border: 1px solid var(--board-3); background: var(--board-2); }
+  @media (max-width: 899px) { .ch-hero__fig { display: none; } }
+  .ch-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.6rem 0 1.2rem; }
+  .ch-actions [data-master][aria-pressed='true'] { background: var(--green-hi); border-color: var(--green-hi); color: var(--board); }
+  .ch-progress { max-width: 24rem; }
+  .ch-progress p { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--chalk-2); }
+  .ch-layout { display: grid; gap: 2rem; padding-block: 2.5rem 4rem; }
+  @media (min-width: 1000px) { .ch-layout { grid-template-columns: 200px minmax(0, 1fr); gap: 4rem; } }
+  .ch-toc ol { list-style: none; padding: 0; margin: 0; display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; }
+  .ch-toc a { display: block; white-space: nowrap; padding: 0.5rem 0.8rem; border: 1px solid var(--rule); background: var(--paper); text-decoration: none; font-size: 0.88rem; border-radius: 999px; }
+  @media (min-width: 1000px) {
+    .ch-toc { position: sticky; top: calc(var(--header-h) + 1.5rem); align-self: start; }
+    .ch-toc ol { flex-direction: column; border-left: 2px solid var(--ink); gap: 0; }
+    .ch-toc a { border: 0; border-radius: 0; background: none; padding: 0.45rem 1rem; }
+    .ch-toc a:hover { color: var(--red); }
+  }
+  @media (max-width: 999px) { .ch-toc { position: sticky; top: var(--header-h); z-index: 5; background: var(--paper); margin-inline: calc(var(--gutter) * -1); padding: 0.6rem var(--gutter); border-bottom: 1px solid var(--rule); } }
+  .ch-main { min-width: 0; }
+  .ch-sec { padding-bottom: 3rem; margin-bottom: 3rem; border-bottom: 1px solid var(--rule); }
+  .ch-sec h2 { font-size: var(--step-3); margin-bottom: 1.2rem; }
+  .ch-summary { font-size: var(--step-1); line-height: 1.6; max-width: 46rem; }
+  .formulas { margin: 0; display: grid; gap: 1rem; }
+  .formula { background: #fff; border: 1px solid var(--rule); padding: 1rem 1.2rem 0.6rem; }
+  .formula dt { font-family: var(--f-hand); font-size: 1.35rem; color: var(--red); font-weight: 600; line-height: 1; }
+  .formula dd { margin: 0; font-size: 1.05rem; }
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+  .checks label { display: flex; align-items: center; gap: 0.8rem; min-height: 52px; padding: 0.5rem 0.9rem; background: #fff; border: 1px solid var(--rule); cursor: pointer; }
+  .checks input { width: 1.3rem; height: 1.3rem; accent-color: var(--green); flex: none; }
+  .checks label:has(input:checked) span { text-decoration: line-through; text-decoration-color: var(--green); color: var(--ink-3); }
+  .vlist { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.6rem; }
+  .vlist__item { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .vlist__item--cours { grid-template-columns: 1.3fr 1fr; align-items: center; } .vlist__item--short { grid-template-columns: 170px 1fr; align-items: center; } }
+  @media (max-width: 639px) { .vlist__item--short { grid-template-columns: 130px 1fr; align-items: center; } }
+  .vlist__kind { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 0.3rem; }
+  .vlist__t { font-family: var(--f-display); font-size: 1.2rem; line-height: 1.3; }
+  .novid { background: #fff; border: 1px dashed var(--rule); padding: 1.2rem; color: var(--ink-2); }
+  .exs { display: grid; gap: 1.2rem; margin-top: 1rem; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .pager a { display: grid; gap: 0.2rem; text-decoration: none; font-family: var(--f-display); font-size: 1.2rem; padding: 1rem 0; border-top: 2px solid var(--ink); }
+  .pager small { font-family: var(--f-text); font-size: 0.8rem; color: var(--ink-3); }
+  .pager__next { text-align: right; }
+  .pager a:hover { color: var(--red); }
+</style>
+
+<script>
+  import { load, update, toggleIn } from '../../lib/store';
+  import { chapterProgress } from '../../lib/progress';
+  const slug = document.querySelector<HTMLElement>('[data-chapter]')!.dataset.chapter!;
+  const meta = JSON.parse(document.getElementById('ch-meta')?.textContent || '{}')[slug] ?? { checks: 0, ex: [] };
+  const boxes = Array.from(document.querySelectorAll<HTMLInputElement>(`[data-checks] input`));
+  const masterBtn = document.querySelector<HTMLButtonElement>('[data-master]')!;
+  const paint = () => {
+    const s = load();
+    const set = new Set(s.checks[slug] ?? []);
+    boxes.forEach((b) => (b.checked = set.has(b.value)));
+    const p = chapterProgress(s, slug, meta.checks, meta.ex);
+    document.querySelector<HTMLElement>('[data-meter]')!.style.width = p.pct + '%';
+    document.querySelector<HTMLElement>('[data-progress-text]')!.textContent = p.mastered
+      ? 'Chapitre marqué comme maîtrisé — 100 %'
+      : `Progression : ${p.pct} % · ${p.checks}/${meta.checks} objectifs · ${p.solved}/${meta.ex.length} exercices réussis`;
+    masterBtn.setAttribute('aria-pressed', String(p.mastered));
+    masterBtn.querySelector('[data-master-label]')!.textContent = p.mastered ? 'Maîtrisé ✓' : 'Marquer comme maîtrisé';
+  };
+  boxes.forEach((b) => b.addEventListener('change', () => update((s) => {
+    const arr = s.checks[slug] ?? [];
+    if (b.checked !== arr.includes(b.value)) toggleIn(arr, b.value);
+    s.checks[slug] = arr;
+  })));
+  masterBtn.addEventListener('click', () => {
+    let on = false;
+    update((s) => { on = toggleIn(s.mastered, slug); });
+    (window as any).phmToast?.(on ? 'Chapitre marqué comme maîtrisé' : 'Chapitre remis « à travailler »');
+  });
+  window.addEventListener('phm:change', paint);
+  paint();
+</script>
