@@ -70,14 +70,6 @@ export const videos: Video[] = [
   { id: 'X4LGV-d23lA', title: 'عيش اللحظة كيف ما كانت', kind: 'short', seconds: 49, date: '2026-04-16', topic: 'etat-d-esprit' },
 ];
 
-/** Thematic collections that are not curriculum chapters. */
-export const collections: Record<string, { fr: string; ar: string; blurb: string }> = {
-  'methode-bac': { fr: 'Méthode & examen national', ar: 'الامتحان الوطني', blurb: 'Conseils et orientations pour aborder le BAC.' },
-  concours: { fr: 'Préparation des concours', ar: 'المباريات', blurb: 'La série « Astuce » pour les concours post-bac.' },
-  culture: { fr: 'Culture mathématique', ar: 'ثقافة رياضية', blurb: 'Galois, nombres singuliers, philosophie des mathématiques.' },
-  'etat-d-esprit': { fr: 'État d’esprit', ar: 'تحفيز', blurb: 'Motivation, constance, réussite.' },
-};
-
 export const fmtDuration = (s: number) => {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -86,5 +78,3 @@ export const fmtDuration = (s: number) => {
   return (h ? `${h}:` : '') + `${mm}:${String(sec).padStart(2, '0')}`;
 };
 
-/** Arabic script detection, used to set dir="auto"/lang on mixed titles */
-export const hasArabic = (s: string) => /[؀-ۿ]/.test(s);

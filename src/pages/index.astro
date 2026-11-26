@@ -3,27 +3,53 @@ import Base from '../layouts/Base.astro';
 import HeroPlot from '../components/HeroPlot.astro';
 import PortraitSlot from '../components/PortraitSlot.astro';
 import VideoFacade from '../components/VideoFacade.astro';
-import Exercise from '../components/Exercise.astro';
 import ChapterFigure from '../components/ChapterFigure.astro';
 import Icon from '../components/Icon.astro';
 import { chapters } from '../data/chapters';
-import { videos, fmtDuration, hasArabic } from '../data/videos';
-import { exercises } from '../data/exercises';
-import { identity, links } from '../data/site';
-import { url } from '../lib/url';
+import { videos, fmtDuration } from '../data/videos';
+import { identity, contact } from '../data/site';
 import { tex } from '../lib/tex';
 
-const vidCount = (slug: string) => videos.filter((v) => v.topic === slug).length;
-const featured = videos.find((v) => v.id === '6XTA_EX9w2Y')!;
-const shorts = ['K57PPKXKBHs', 'n8D5n4ufnp4', 'xxG1hjN4r1c', 'M-kjMa0B8Uw', 'ZRcJpzyJT6c', 'L93mPstfJBA'].map((id) => videos.find((v) => v.id === id)!);
-const sample = exercises.find((e) => e.id === 'dv-3')!;
-const totalMinutes = Math.round(videos.reduce((a, v) => a + v.seconds, 0) / 60);
-const s1 = chapters.filter((c) => c.semester === 1);
-const s2 = chapters.filter((c) => c.semester === 2);
+const v = (id: string) => videos.find((x) => x.id === id)!;
+const featured = v('yg6YlI4Rz9c');
+const side = [v('6XTA_EX9w2Y'), v('wM88JcxD2ao')];
+const shorts = [v('K57PPKXKBHs'), v('n8D5n4ufnp4'), v('xxG1hjN4r1c'), v('L93mPstfJBA')];
+
+const approach = [
+  {
+    t: 'Le cours complet, au tableau', fig: 'complex' as const,
+    p: 'Des leçons longues, tracées au feutre de bout en bout : définitions, propriétés, démonstrations et exemples, sans couper les étapes.',
+    ex: 'Nombres complexes — partie 1, 1 h 23 ; Calcul intégral — partie 1, 1 h 07.',
+  },
+  {
+    t: 'La correction qui montre la méthode', fig: 'limit' as const,
+    p: 'Des exercices du manuel « Al Moufid » et des sujets d’examen corrigés pas à pas, pour apprendre à rédiger autant qu’à calculer.',
+    ex: 'Exercice 32 — dérivabilité de la fonction réciproque ; correction d’un examen sur la continuité, le TVI et la fonction réciproque (2 BAC PC).',
+  },
+  {
+    t: 'La capsule qui va à l’essentiel', fig: 'sym' as const,
+    p: 'Une idée, une minute : un résultat du cours isolé et expliqué, à revoir juste avant un contrôle.',
+    ex: '« Limite et nombre dérivé », « Axe de symétrie d’une courbe », « Les suites numériques (suite majorée) ».',
+  },
+  {
+    t: 'L’état d’esprit, et la culture autour', fig: 'cobweb' as const,
+    p: 'Des messages pour tenir jusqu’au BAC, et des ouvertures sur l’histoire et la philosophie des mathématiques.',
+    ex: 'Évariste Galois, le « nombre phénix », « les mathématiques : invention ou découverte ? ».',
+  },
+];
+
+type Ch = { href: string; label: string; sub: string; icon: 'ig' | 'yt' | 'threads' | 'phone'; primary: boolean };
+const channels: Ch[] = [
+  { href: contact.instagramDM, label: 'Écrire en message privé', sub: `Instagram · ${identity.handle}`, icon: 'ig', primary: true },
+  ...(contact.whatsapp ? [{ href: contact.whatsapp, label: 'WhatsApp', sub: 'Numéro communiqué par le professeur', icon: 'phone' as const, primary: false }] : []),
+  { href: contact.youtube, label: 'Chaîne YouTube', sub: 'YouTube · @prof_hakimi_maths', icon: 'yt', primary: false },
+  { href: contact.instagram, label: 'Profil Instagram', sub: 'Instagram · @prof_hakimi_maths', icon: 'ig', primary: false },
+  { href: contact.threads, label: 'Threads', sub: 'Threads · @prof_hakimi_maths', icon: 'threads', primary: false },
+];
 ---
-<Base title="Mathématiques 2ᵉ BAC, au tableau" description="Concept de site pour Prof Hakimi maths (Hicham Hakimi) : cours vidéo rangés par chapitre, labo de fonctions, exercices corrigés et préparation à l'examen national du BAC.">
+<Base title="Prof Hakimi maths — Hicham Hakimi, professeur de mathématiques" description="Concept de site vitrine pour Prof Hakimi maths (Hicham Hakimi) : professeur et chercheur en mathématiques, 2ᵉ BAC Sciences expérimentales et préparation des concours.">
   <!-- ——— HERO ——— -->
-  <section class="hero board" aria-labelledby="hero-title">
+  <section class="hero board" id="top" aria-labelledby="hero-title">
     <HeroPlot />
     <div class="wrap hero__grid">
       <div class="hero__text">
@@ -33,10 +59,10 @@ const s2 = chapters.filter((c) => c.semester === 2);
           <span class="hero__last">Hakimi</span>
         </h1>
         <p class="hero__role">Professeur &amp; chercheur en mathématiques — <span class="nowrap">2ᵉ BAC Sciences expérimentales</span>, préparation des concours.</p>
-        <p class="hero__lead">Chaque chapitre du BAC, du tableau jusqu’à la tangente&nbsp;: ses leçons rangées, des exercices corrigés et un labo pour voir les fonctions bouger.</p>
+        <p class="hero__lead">Les mathématiques comme on les fait au tableau&nbsp;: une définition, une figure juste, puis chaque étape jusqu’au résultat.</p>
         <div class="hero__cta">
-          <a class="btn btn--chalk" href={url('cours/')}>Explorer les chapitres <Icon name="arrow" /></a>
-          <a class="btn btn--ghost" href={url('labo/')}>Ouvrir le labo des fonctions</a>
+          <a class="btn btn--chalk" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Écrire au professeur<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
+          <a class="btn btn--ghost" href="#videos">Voir ses cours en vidéo</a>
         </div>
       </div>
       <div class="hero__side">
@@ -45,145 +71,203 @@ const s2 = chapters.filter((c) => c.semester === 2);
     </div>
     <div class="wrap hero__foot">
       <p class="heroplot__eq" aria-hidden="true">
-  <span class="heroplot__f">f(x) = x³⁄4 − x</span>
-  <span>Tangente en x₀ = <b data-x0>1,50</b></span>
-  <span>y = <b data-eq>0,69x − 1,69</b></span>
-</p>
+        <span class="heroplot__f">f(x) = x³⁄4 − x</span>
+        <span>tangente en x₀ = <b data-x0>1,50</b></span>
+        <span>y = <b data-eq>0,69x − 1,69</b></span>
+      </p>
       <p class="hero__ar ar" lang="ar">الرياضيات، خطوة بخطوة</p>
     </div>
   </section>
 
-  <!-- ——— FACTS STRIP ——— -->
-  <section class="facts" aria-label="Repères">
+  <!-- ——— FACTS ——— -->
+  <section class="facts" aria-label="En bref">
     <div class="wrap facts__row">
-      <p><b>{videos.length}</b> vidéos publiées sur sa chaîne, rangées ici par chapitre</p>
-      <p><b>{Math.floor(totalMinutes / 60)} h {String(totalMinutes % 60).padStart(2, '0')}</b> de contenu au tableau</p>
-      <p><b>FR · ع</b> cours en français, explications en arabe et darija</p>
-      <p><b>{chapters.length}</b> chapitres du programme 2ᵉ BAC, cartographiés</p>
+      <p><b>2ᵉ BAC</b>Sciences expérimentales — filière PC citée dans ses vidéos</p>
+      <p><b>Concours</b>une série dédiée à la préparation des concours post-bac</p>
+      <p><b>FR · ع</b>les maths en français, l’explication en arabe et en darija</p>
+      <p><b>Au tableau</b>cours complets, corrections d’exercices, capsules courtes</p>
     </div>
   </section>
 
-  <!-- ——— SOMMAIRE ——— -->
-  <section class="section paper-grid" aria-labelledby="som-title">
+  <!-- ——— PROFESSEUR ——— -->
+  <section class="section paper-grid prof" id="professeur" aria-labelledby="prof-title">
+    <div class="wrap prof__grid">
+      <div class="reveal">
+        <p class="kicker"><span class="dot dot--w"></span> Le professeur</p>
+        <h2 id="prof-title" class="prof__h">Rigueur au tableau, <em>culture</em> autour.</h2>
+        <figure class="prof__fig">
+          <ChapterFigure kind="tangent" label="Une courbe et sa tangente en un point" />
+          <figcaption class="hand">la tangente : la meilleure droite au voisinage d’un point</figcaption>
+        </figure>
+      </div>
+      <div class="prof__body reveal">
+        <blockquote class="prof__quote">
+          <p lang="ar" class="ar">و أنت في طريقك للبحث عن حياة لا تنسى أن تعيش</p>
+          <footer>— première ligne de sa biographie Instagram</footer>
+        </blockquote>
+        <p class="prof__lead">{identity.fullName} se présente comme <strong>professeur de mathématiques</strong> et <strong>chercheur en mathématiques</strong>. Sur sa chaîne, il enseigne le programme du 2ᵉ BAC Sciences expérimentales et partage, à côté du cours, ce qui fait tenir un élève&nbsp;: la méthode, la constance et le goût des idées.</p>
+        <dl class="prof__facts">
+          <div><dt>Matière</dt><dd>Mathématiques</dd></div>
+          <div><dt>Niveaux</dt><dd>2ᵉ BAC Sciences expérimentales (PC) · préparation des concours post-bac</dd></div>
+          <div><dt>Langues</dt><dd>Français pour les notions, arabe et darija pour l’explication</dd></div>
+          <div><dt>Supports</dt><dd>Tableau blanc, manuel « Al Moufid », sujets d’examen</dd></div>
+        </dl>
+        <p class="src-note">Informations issues de ses comptes publics Instagram et YouTube (relevé du 26 novembre 2026). Parcours détaillé et diplômes&nbsp;: à compléter avec le professeur.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ——— APPROCHE ——— -->
+  <section class="section approach" id="approche" aria-labelledby="app-title">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="kicker"><span class="dot dot--g"></span> Programme 2ᵉ BAC · Sciences expérimentales</p>
-        <h2 id="som-title">Le sommaire<span class="h-ar" lang="ar">فهرس الدروس</span></h2>
-        <p>Onze chapitres, dans l’ordre du programme. Chaque page réunit l’essentiel, les formules, les vidéos du professeur et des exercices corrigés.</p>
+        <p class="kicker"><span class="dot"></span> Approche pédagogique</p>
+        <h2 id="app-title">Quatre façons d’apprendre<span class="h-ar" lang="ar">طريقة التدريس</span></h2>
+        <p>Ce qu’on observe dans ses publications : le même souci de clarté, sous quatre formes.</p>
       </header>
-      <div class="som">
-        {[{ t: 'Premier semestre', list: s1 }, { t: 'Second semestre', list: s2 }].map((g) => (
-          <div class="som__col reveal">
-            <h3 class="som__sem">{g.t} <span>(indicatif)</span></h3>
-            <ol class="som__list">
-              {g.list.map((c) => (
-                <li>
-                  <a class="som__row" href={url(`cours/${c.slug}/`)}>
-                    <span class="som__n">{String(c.n).padStart(2, '0')}</span>
-                    <span class="som__t">{c.fr}<span class="som__ar" lang="ar">{c.ar}</span></span>
-                    <span class="som__v">{vidCount(c.slug) ? `${vidCount(c.slug)} vidéo${vidCount(c.slug) > 1 ? 's' : ''}` : '—'}</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
+      <ol class="app">
+        {approach.map((a, i) => (
+          <li class="app__row reveal">
+            <span class="app__n" aria-hidden="true">{['I', 'II', 'III', 'IV'][i]}</span>
+            <div class="app__body">
+              <h3>{a.t}</h3>
+              <p>{a.p}</p>
+              <p class="app__ex"><span>Exemples publiés</span>{a.ex}</p>
+            </div>
+            <div class="app__fig"><ChapterFigure kind={a.fig} /></div>
+          </li>
         ))}
-      </div>
-      <p class="som__more reveal"><a class="link-arrow" href={url('cours/')}>Filtrer, chercher et suivre sa progression →</a></p>
+      </ol>
     </div>
   </section>
 
-  <!-- ——— LAB TEASER ——— -->
-  <section class="section board chalk-grid lab-teaser" aria-labelledby="lab-title">
-    <div class="wrap lab-teaser__grid">
-      <div class="reveal">
-        <p class="kicker"><span class="dot"></span> Signature interactive</p>
-        <h2 id="lab-title" class="lab-teaser__h">Le labo des fonctions</h2>
-        <p class="lab-teaser__p">Choisissez une famille — polynôme, logarithme, exponentielle, homographique, trigonométrique — ou tapez votre propre expression. Réglez <em>a</em>, <em>b</em>, <em>c</em>&nbsp;; faites glisser le point&nbsp;: la courbe de <span set:html={tex("f'")} /> et l’équation de la tangente suivent en direct.</p>
-        <div class="lab-teaser__tex" set:html={tex("(T):\\ y=f'(x_0)\\,(x-x_0)+f(x_0)", true)} />
-        <a class="btn btn--chalk" href={url('labo/')}>Ouvrir le labo <Icon name="arrow" /></a>
+  <!-- ——— PROGRAMME ——— -->
+  <section class="section board chalk-grid programme" id="programme" aria-labelledby="prog-title">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="kicker"><span class="dot dot--g"></span> Ce qu’il enseigne</p>
+        <h2 id="prog-title">Le programme<span class="h-ar" lang="ar">المقرر</span></h2>
+        <p>Les chapitres de mathématiques du 2ᵉ BAC Sciences expérimentales qu’il a déjà traités publiquement en vidéo.</p>
+      </header>
+      <div class="levels reveal">
+        <div class="level">
+          <p class="level__k">Niveau principal</p>
+          <p class="level__t">2ᵉ année Bac<br /><em>Sciences expérimentales</em></p>
+          <p class="level__s">Filière PC citée dans ses titres ; corrections du manuel « Al Moufid — sciences expérimentales ».</p>
+        </div>
+        <div class="level">
+          <p class="level__k">Préparation</p>
+          <p class="level__t">Concours<br /><em>post-bac</em></p>
+          <p class="level__s">Série « Préparation des concours avec Prof Hakimi — Astuce 1 à 5 ».</p>
+        </div>
+        <div class="level level--muted">
+          <p class="level__k">Autres niveaux</p>
+          <p class="level__t">À préciser<br /><em>avec le professeur</em></p>
+          <p class="level__s">Collège, tronc commun, 1ʳᵉ BAC, autres filières : non mentionnés publiquement.</p>
+        </div>
       </div>
-      <figure class="lab-teaser__fig reveal">
-        <ChapterFigure kind="tangent" label="Courbe d’une fonction cubique et sa tangente en un point" />
-        <figcaption class="hand">tangente = meilleure approximation affine</figcaption>
-      </figure>
+      <ol class="toc">
+        {chapters.map((c, i) => (
+          <li class="toc__row reveal">
+            <span class="toc__n">{String(i + 1).padStart(2, '0')}</span>
+            <span class="toc__t">{c.fr}<span class="toc__ar" lang="ar">{c.ar}</span></span>
+            <span class="toc__f" set:html={tex(c.formula)} />
+          </li>
+        ))}
+      </ol>
+      <p class="toc__note">Formules affichées à titre d’illustration du chapitre.</p>
     </div>
   </section>
 
   <!-- ——— VIDEOS ——— -->
-  <section class="section" aria-labelledby="vid-title">
+  <section class="section" id="videos" aria-labelledby="vid-title">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="kicker"><span class="dot dot--o"></span> Chaîne officielle · youtube.com/@prof_hakimi_maths</p>
+        <p class="kicker"><span class="dot dot--o"></span> Contenus publics</p>
         <h2 id="vid-title">Au tableau<span class="h-ar" lang="ar">الدروس بالفيديو</span></h2>
-        <p>Les vidéos publiques de sa chaîne, lues ici via le lecteur YouTube sans cookies, uniquement quand vous appuyez sur lecture.</p>
+        <p>Une sélection de sa chaîne YouTube. Le lecteur (sans cookies) ne se charge que lorsque vous appuyez sur lecture.</p>
       </header>
-      <div class="vid-feature reveal">
-        <VideoFacade video={featured} size="lg" />
-        <div class="vid-feature__meta">
-          <p class="kicker">Cours complet · {fmtDuration(featured.seconds)}</p>
-          <h3 class="vid-feature__t mixed" dir="auto">Calcul intégral — partie 1<span class="h-ar" lang="ar">الحساب التكاملي</span></h3>
-          <p>Primitives, intégrale et premières propriétés, expliquées au tableau blanc.</p>
-          <p class="vid-feature__links"><a class="link-arrow" href={url('cours/calcul-integral/')}>Chapitre « Calcul intégral »</a> <a class="link-arrow" href={url('videos/')}>Toute la vidéothèque</a></p>
+      <div class="vids">
+        <article class="vids__main reveal">
+          <VideoFacade video={featured} size="lg" />
+          <p class="vids__k">Cours complet · {fmtDuration(featured.seconds)}</p>
+          <h3 class="vids__t">Les nombres complexes — partie 1 <span class="h-ar" lang="ar">الأعداد العقدية</span></h3>
+        </article>
+        <div class="vids__side">
+          {side.map((s) => (
+            <article class="vids__item reveal">
+              <VideoFacade video={s} />
+              <p class="vids__k">{s.id === '6XTA_EX9w2Y' ? 'Cours' : 'Correction d’examen'} · {fmtDuration(s.seconds)}</p>
+              <h3 class="vids__t vids__t--sm">{s.id === '6XTA_EX9w2Y' ? 'Calcul intégral — partie 1' : 'Continuité, TVI, fonction réciproque — 2 BAC PC'}</h3>
+            </article>
+          ))}
         </div>
       </div>
-      <h3 class="rail-title reveal">Capsules courtes</h3>
-      <ul class="rail" aria-label="Shorts du professeur">
-        {shorts.map((v) => (
+      <h3 class="rail-title">Capsules</h3>
+      <ul class="rail" aria-label="Capsules courtes du professeur">
+        {shorts.map((s) => (
           <li class="rail__item">
-            <VideoFacade video={v} size="short" />
-            <p class="rail__t mixed" dir="auto" lang={hasArabic(v.title) && !/[a-z]{3}/i.test(v.title) ? 'ar' : undefined}>{v.title}</p>
+            <VideoFacade video={s} size="short" />
+            <p class="rail__t mixed" dir="auto">{s.title.replace(/#\S+/g, '').trim()}</p>
           </li>
         ))}
       </ul>
+      <p class="vids__more"><a class="btn btn--ghost" href={contact.youtube} target="_blank" rel="noopener"><Icon name="yt" /> Toutes ses vidéos sur YouTube<span class="sr-only"> (nouvel onglet)</span></a></p>
     </div>
   </section>
 
-  <!-- ——— EXAM ——— -->
-  <section class="section paper-grid" aria-labelledby="exam-title">
-    <div class="wrap exam-teaser">
-      <div class="reveal">
-        <p class="kicker"><span class="dot"></span> Centre de préparation</p>
-        <h2 id="exam-title" class="exam-teaser__h">Examen national, <em>sans surprise</em></h2>
-        <p class="exam-teaser__p">Exercices type BAC filtrés par chapitre et difficulté, problèmes guidés, épreuve chronométrée, checklist de révision et bilan de séance. Essayez — la correction est instantanée.</p>
-        <ul class="exam-teaser__list">
-          <li><Icon name="check" /> {exercises.length} exercices originaux corrigés pas à pas</li>
-          <li><Icon name="check" /> Mode chrono avec bilan par chapitre</li>
-          <li><Icon name="check" /> Progression gardée sur cet appareil, sans compte</li>
-        </ul>
-        <a class="btn" href={url('examen/')}>Entrer dans le centre <Icon name="arrow" /></a>
-        <p class="demo-tag" style="margin-top:1rem">Contenu de démonstration</p>
-      </div>
-      <div class="reveal">
-        <Exercise ex={sample} index={1} showChapter />
+  <!-- ——— ÉTUDIER ——— -->
+  <section class="section board study" id="etudier" aria-labelledby="study-title">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="kicker"><span class="dot"></span> Étudier avec lui</p>
+        <h2 id="study-title">Trois termes d’une <em>suite</em></h2>
+        <p>Le chemin le plus simple, à partir des canaux qu’il utilise déjà.</p>
+      </header>
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step__u" set:html={tex('u_0')} />
+          <h3>Découvrir sa façon d’expliquer</h3>
+          <p>Commencez par ses cours et capsules gratuits sur YouTube et Instagram&nbsp;: vous saurez vite si son approche vous convient.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__u" set:html={tex('u_1')} />
+          <h3>Lui écrire en message privé</h3>
+          <p>Sur Instagram, présentez-vous en une phrase&nbsp;: niveau, filière, chapitre qui bloque, objectif (examen national, concours).</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__u" set:html={tex('u_2')} />
+          <h3>Convenir des modalités avec lui</h3>
+          <p>Format, horaires et conditions vous sont communiqués directement par le professeur — ils ne sont pas publiés en ligne.</p>
+        </li>
+      </ol>
+      <div class="study__lim reveal">
+        <span class="study__tex" set:html={tex('\\lim_{n\\to+\\infty} u_n = \\text{le BAC}')} />
+        <a class="btn btn--chalk" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Envoyer un message<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
       </div>
     </div>
   </section>
 
-  <!-- ——— ABOUT ——— -->
-  <section class="section board about" aria-labelledby="about-title">
-    <div class="wrap about__grid">
+  <!-- ——— CONTACT ——— -->
+  <section class="section paper-grid contact" id="contact" aria-labelledby="contact-title">
+    <div class="wrap contact__grid">
       <div class="reveal">
-        <p class="kicker"><span class="dot dot--w"></span> Le professeur</p>
-        <h2 id="about-title" class="about__h">Rigueur au tableau, <em>culture</em> autour</h2>
+        <p class="kicker"><span class="dot dot--g"></span> Contact</p>
+        <h2 id="contact-title" class="contact__h">Une question&nbsp;?<br /><em>Écrivez-lui.</em></h2>
+        <p class="contact__p">Le message privé Instagram est aujourd’hui le moyen le plus direct de joindre le professeur.</p>
       </div>
-      <div class="about__body reveal">
-        <blockquote class="about__quote">
-          <p lang="ar" class="ar">و أنت في طريقك للبحث عن حياة لا تنسى أن تعيش</p>
-          <footer>— première ligne de sa bio Instagram</footer>
-        </blockquote>
-        <dl class="about__facts">
-          <div><dt>Profil</dt><dd>{identity.roles.join(' · ')} <small>(bio Instagram)</small></dd></div>
-          <div><dt>Niveaux</dt><dd>2ᵉ BAC Sciences expérimentales (PC) — corrections du manuel « Al Moufid » — et préparation des concours post-bac.</dd></div>
-          <div><dt>Langues</dt><dd>Mathématiques en français, explications et motivation en arabe et en darija.</dd></div>
-          <div><dt>Au-delà du programme</dt><dd>Évariste Galois, le « nombre phénix », la philosophie des mathématiques — invention ou découverte&nbsp;?</dd></div>
-        </dl>
-        <p class="about__links">
-          <a class="btn btn--ghost btn--sm" href={links.instagram} target="_blank" rel="noopener"><Icon name="ig" /> Instagram<span class="sr-only"> (nouvel onglet)</span></a>
-          <a class="btn btn--ghost btn--sm" href={links.youtube} target="_blank" rel="noopener"><Icon name="yt" /> YouTube<span class="sr-only"> (nouvel onglet)</span></a>
-          <a class="btn btn--ghost btn--sm" href={links.threads} target="_blank" rel="noopener"><Icon name="threads" /> Threads<span class="sr-only"> (nouvel onglet)</span></a>
-        </p>
-      </div>
+      <ul class="channels reveal">
+        {channels.map((c) => (
+          <li>
+            <a class:list={['channel', { 'channel--primary': c.primary }]} href={c.href} target="_blank" rel="noopener">
+              <span class="channel__i"><Icon name={c.icon === 'phone' ? 'ig' : c.icon} /></span>
+              <span class="channel__txt"><b>{c.label}</b><span>{c.sub}</span></span>
+              <span class="channel__arrow"><Icon name="arrow" /></span>
+              <span class="sr-only"> (nouvel onglet)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </Base>
@@ -193,6 +277,7 @@ const s2 = chapters.filter((c) => c.semester === 2);
   .hero { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(2.2rem, 1.5rem + 4vw, 5rem) 1.6rem; }
   .hero::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(90deg, rgba(17, 25, 21, 0.92) 0%, rgba(17, 25, 21, 0.55) 42%, rgba(17, 25, 21, 0) 70%); }
   .hero__grid { position: relative; z-index: 2; display: grid; gap: 2rem; align-items: end; }
+  .hero__grid > * { min-width: 0; }
   @media (min-width: 900px) { .hero__grid { grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr); gap: 4rem; min-height: min(72vh, 640px); } }
   .hero__name { font-weight: 400; font-size: clamp(3.6rem, 1.6rem + 9vw, 9.2rem); line-height: 0.88; letter-spacing: -0.035em; margin: 1rem 0 1.2rem; font-variation-settings: 'opsz' 144; }
   .hero__name span { display: block; }
@@ -208,83 +293,120 @@ const s2 = chapters.filter((c) => c.semester === 2);
   .heroplot__eq { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 0.25rem 1.2rem; margin: 0; font-family: var(--f-math); font-size: 1.05rem; color: var(--chalk-2); }
   .heroplot__eq b { font-weight: 400; color: var(--chalk-yellow); font-variant-numeric: tabular-nums; }
   .heroplot__f { color: var(--chalk); font-style: italic; }
-
   @media (max-width: 899px) {
     .hero::after { background: linear-gradient(180deg, rgba(17, 25, 21, 0.15), rgba(17, 25, 21, 0.55) 30%, rgba(17, 25, 21, 0.92) 50%, rgba(17, 25, 21, 0.98)); }
-    .hero__portrait { max-width: none; aspect-ratio: 16 / 10; margin: 0; }
+    .hero__portrait { max-width: none; aspect-ratio: 4 / 4.2; margin: 0; }
     .hero__cta .btn { flex: 1 1 100%; }
     .hero__foot { flex-direction: column; align-items: flex-start; }
   }
 
   /* FACTS */
   .facts { background: var(--board-2); color: var(--chalk-2); border-top: 1px solid var(--board-3); }
-  .facts__row { display: grid; grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: 900px) { .facts__row { grid-template-columns: repeat(4, 1fr); } }
-  .facts p { margin: 0; padding: 1.2rem 1rem 1.2rem 0; font-size: 0.86rem; line-height: 1.4; border-right: 1px solid var(--board-3); padding-left: 1rem; }
+  .facts__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 900px) { .facts__row { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .facts p { margin: 0; padding: 1.3rem 1rem; font-size: 0.86rem; line-height: 1.4; border-right: 1px solid var(--board-3); }
   .facts p:first-child { padding-left: 0; }
-  @media (max-width: 899px) { .facts p { border-right: 0; border-bottom: 1px solid var(--board-3); padding-left: 0; } .facts p:nth-child(odd) { padding-right: 1rem; border-right: 1px solid var(--board-3); } .facts p:nth-child(even) { padding-left: 1rem; } }
-  .facts b { display: block; font-family: var(--f-display); font-weight: 500; font-size: 1.7rem; color: var(--chalk); margin-bottom: 0.15rem; }
+  .facts p:last-child { border-right: 0; }
+  @media (max-width: 899px) { .facts p { border-bottom: 1px solid var(--board-3); } .facts p:nth-child(odd) { padding-left: 0; } .facts p:nth-child(even) { border-right: 0; } }
+  .facts b { display: block; font-family: var(--f-display); font-weight: 500; font-size: 1.6rem; color: var(--chalk); margin-bottom: 0.2rem; }
 
-  /* SOMMAIRE */
-  .som { display: grid; gap: 2.5rem; }
-  @media (min-width: 960px) { .som { grid-template-columns: 1fr 1fr; gap: 4rem; } }
-  .som__sem { font-family: var(--f-text); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); padding-bottom: 0.7rem; border-bottom: 2px solid var(--ink); }
-  .som__sem span { color: var(--ink-3); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
-  .som__list { list-style: none; margin: 0; padding: 0; }
-  .som__row { display: grid; grid-template-columns: 3rem 1fr auto; align-items: baseline; gap: 0.8rem; padding: 1rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; background: linear-gradient(var(--paper), var(--paper)); position: relative; }
-  .som__n { font-family: var(--f-display); font-size: 1.6rem; color: var(--ink-3); font-variant-numeric: tabular-nums; font-style: italic; }
-  .som__t { font-family: var(--f-display); font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem); line-height: 1.2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.1rem 1rem; }
-  .som__ar { font-family: var(--f-ar); font-size: 1.05rem; color: var(--ink-3); direction: rtl; }
-  .som__v { font-size: 0.78rem; color: var(--ink-3); white-space: nowrap; min-width: 4.5rem; text-align: right; }
-  .som__row::after { content: ''; position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--red); transition: width 0.45s var(--ease); }
-  .som__row:hover::after, .som__row:focus-visible::after { width: 100%; }
-  .som__row:hover .som__n { color: var(--red); }
-  .som__more { margin-top: 2rem; }
+  /* PROFESSEUR */
+  .prof__grid { display: grid; gap: 2.5rem; }
+  .prof__grid > * { min-width: 0; }
+  @media (min-width: 960px) { .prof__grid { grid-template-columns: 1fr 1.2fr; gap: 5rem; } }
+  .prof__h { font-size: var(--step-4); margin-top: 0.8rem; }
+  .prof__h em { color: var(--red); }
+  .prof__fig { margin: 2.5rem 0 0; max-width: 420px; }
+  .prof__fig figcaption { color: var(--red); font-size: 1.35rem; margin-top: 0.4rem; }
+  .prof__quote { margin: 0 0 1.8rem; padding: 0 0 1.5rem; border-bottom: 1px solid var(--rule); }
+  .prof__quote p { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem); line-height: 1.7; margin: 0 0 0.3rem; }
+  .prof__quote footer { font-size: 0.85rem; color: var(--ink-3); }
+  .prof__lead { font-size: var(--step-1); line-height: 1.6; }
+  .prof__facts { margin: 1.8rem 0 0; display: grid; border-top: 2px solid var(--ink); }
+  .prof__facts div { display: grid; gap: 0.2rem; padding: 0.9rem 0; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 600px) { .prof__facts div { grid-template-columns: 9rem 1fr; gap: 1rem; } }
+  .prof__facts dt { font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); padding-top: 0.2rem; }
+  .prof__facts dd { margin: 0; }
+  .src-note { font-size: 0.82rem; color: var(--ink-3); margin-top: 1.2rem; }
 
-  /* LAB TEASER */
-  .lab-teaser__grid { display: grid; gap: 2.5rem; align-items: center; }
-  @media (min-width: 900px) { .lab-teaser__grid { grid-template-columns: 1fr 1.1fr; gap: 4rem; } }
-  .lab-teaser__h { font-size: var(--step-4); margin: 0.8rem 0 1rem; }
-  .lab-teaser__p { color: var(--chalk-2); font-size: var(--step-1); max-width: 34rem; }
-  .lab-teaser__tex { color: var(--chalk); font-size: 1.15rem; margin: 1rem 0 1.6rem; overflow-x: auto; }
-  .lab-teaser__fig { margin: 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--board-3); background: var(--board-2); }
-  .lab-teaser__fig figcaption { color: var(--chalk-yellow); font-size: 1.4rem; margin-top: 0.4rem; text-align: right; }
+  /* APPROCHE */
+  .app { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .app__row { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: 0.5rem 1.2rem; padding: 2rem 0; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) { .app__row { grid-template-columns: 6rem minmax(0, 1fr) 300px; gap: 2.5rem; align-items: center; padding: 2.6rem 0; } }
+  .app__n { font-family: var(--f-display); font-style: italic; font-size: clamp(2rem, 1.5rem + 2vw, 3.4rem); color: var(--red); line-height: 1; }
+  .app__body h3 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+  .app__body p { color: var(--ink-2); max-width: 40rem; }
+  .app__ex { font-size: 0.92rem; margin: 0; }
+  .app__ex span { display: block; font-family: var(--f-hand); font-size: 1.25rem; color: var(--blue); font-weight: 600; line-height: 1.1; }
+  .app__fig { grid-column: 2; max-width: 300px; }
+  @media (min-width: 900px) { .app__fig { grid-column: auto; } }
+  @media (max-width: 599px) { .app__fig { display: none; } }
+
+  /* PROGRAMME */
+  .levels { display: grid; gap: 1px; background: var(--board-3); border: 1px solid var(--board-3); margin-bottom: 3rem; }
+  @media (min-width: 900px) { .levels { grid-template-columns: 1.2fr 1fr 1fr; } }
+  .level { background: var(--board); padding: 1.5rem; }
+  .level__k { font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--chalk-3); margin-bottom: 0.6rem; }
+  .level__t { font-family: var(--f-display); font-size: var(--step-2); line-height: 1.1; color: var(--chalk); margin-bottom: 0.8rem; }
+  .level__t em { color: var(--chalk-yellow); }
+  .level__s { font-size: 0.9rem; color: var(--chalk-2); margin: 0; }
+  .level--muted .level__t, .level--muted .level__t em { color: var(--chalk-2); }
+  .toc { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--chalk); }
+  .toc__row { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0.3rem 1rem; padding: 1.15rem 0; border-bottom: 1px solid var(--board-3); align-items: baseline; }
+  @media (min-width: 900px) { .toc__row { grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; } }
+  .toc__n { font-family: var(--f-display); font-style: italic; font-size: 1.5rem; color: var(--red-hi); }
+  .toc__t { font-family: var(--f-display); font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.85rem); line-height: 1.2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.2rem 1rem; }
+  .toc__ar { font-family: var(--f-ar); font-size: 1.05rem; color: var(--chalk-2); }
+  .toc__f { grid-column: 2; color: var(--chalk-yellow); font-size: 1.05rem; overflow-x: auto; overflow-y: hidden; }
+  @media (min-width: 900px) { .toc__f { grid-column: auto; text-align: right; } }
+  .toc__note { font-size: 0.8rem; color: var(--chalk-2); margin-top: 1rem; }
 
   /* VIDEOS */
-  .vid-feature { display: grid; gap: 1.5rem; align-items: center; margin-bottom: 3rem; }
-  @media (min-width: 900px) { .vid-feature { grid-template-columns: 1.5fr 1fr; gap: 3rem; } }
-  .vid-feature__t { font-size: var(--step-3); margin: 0.6rem 0 0.8rem; }
-  .vid-feature__meta p { color: var(--ink-2); }
-  .vid-feature__links { display: flex; flex-wrap: wrap; gap: 1.2rem; }
-  .rail-title { font-family: var(--f-text); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-2); margin-bottom: 1rem; }
-  .rail { list-style: none; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 0.6rem; display: grid; grid-auto-flow: column; grid-auto-columns: clamp(150px, 42vw, 190px); gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .vids { display: grid; gap: 1.6rem; }
+  .vids > * { min-width: 0; }
+  @media (min-width: 960px) { .vids { grid-template-columns: 1.6fr 1fr; gap: 2.4rem; } }
+  .vids__side { display: grid; gap: 1.6rem; align-content: start; }
+  .vids__k { font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); margin: 0.8rem 0 0.3rem; }
+  .vids__t { font-size: var(--step-2); }
+  .vids__t--sm { font-size: var(--step-1); }
+  .rail-title { font-family: var(--f-text); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-2); margin: 3rem 0 1rem; }
+  .rail { list-style: none; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 0.6rem; display: grid; grid-auto-flow: column; grid-auto-columns: clamp(150px, 42vw, 220px); gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  @media (min-width: 960px) { .rail { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); overflow: visible; margin: 0; padding: 0; } }
   .rail__item { scroll-snap-align: start; }
-  .rail__t { font-size: 0.86rem; line-height: 1.35; margin: 0.55rem 0 0; color: var(--ink-2); }
+  .rail__t { font-size: 0.88rem; line-height: 1.35; margin: 0.6rem 0 0; color: var(--ink-2); }
+  .vids__more { margin-top: 2rem; }
 
-  /* EXAM */
-  .exam-teaser { display: grid; gap: 2.5rem; align-items: start; }
-  @media (min-width: 960px) { .exam-teaser { grid-template-columns: 1fr 1.15fr; gap: 4rem; } }
-  .exam-teaser__h { font-size: var(--step-4); margin: 0.8rem 0 1rem; }
-  .exam-teaser__h em, .about__h em { color: var(--red); }
-  .exam-teaser__p { font-size: var(--step-1); color: var(--ink-2); }
-  .exam-teaser__list { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: 0.5rem; }
-  .exam-teaser__list li { display: flex; gap: 0.6rem; align-items: center; }
-  .exam-teaser__list :global(svg) { width: 20px; height: 20px; color: var(--green); flex: none; }
+  /* ÉTUDIER */
+  .study h2 em { color: var(--chalk-yellow); }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  @media (min-width: 900px) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3rem; } }
+  .step { padding: 1.6rem 0; border-top: 1px solid var(--board-3); position: relative; }
+  @media (min-width: 900px) { .step { border-top: 2px solid var(--chalk); } .step::before { content: ''; position: absolute; top: -7px; left: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--red-hi); } }
+  .step__u { display: block; font-size: 2.4rem; color: var(--chalk-yellow); line-height: 1; margin-bottom: 1rem; }
+  .step h3 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+  .step p { color: var(--chalk-2); }
+  .study__lim { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem 2rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--board-3); color: var(--chalk); }
+  .study__tex { font-size: clamp(1.3rem, 1rem + 1.4vw, 2rem); }
 
-  /* ABOUT */
-  .about__grid { display: grid; gap: 2rem; }
-  @media (min-width: 900px) { .about__grid { grid-template-columns: 1fr 1.3fr; gap: 4rem; } }
-  .about__h { font-size: var(--step-4); margin-top: 0.8rem; }
-  .about__h em { color: var(--red-hi); }
-  .about__quote { margin: 0 0 2rem; padding: 0 0 1.5rem; border-bottom: 1px solid var(--board-3); }
-  .about__quote p { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem); line-height: 1.6; color: var(--chalk); margin: 0 0 0.4rem; }
-  .about__quote footer { font-size: 0.85rem; color: var(--chalk-3); }
-  .about__facts { margin: 0; display: grid; gap: 1.1rem; }
-  .about__facts div { display: grid; gap: 0.2rem; }
-  @media (min-width: 600px) { .about__facts div { grid-template-columns: 11rem 1fr; gap: 1rem; } }
-  .about__facts dt { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--chalk-3); padding-top: 0.2rem; }
-  .about__facts dd { margin: 0; color: var(--chalk); }
-  .about__facts small { color: var(--chalk-3); }
-  .about__links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem; }
+  /* CONTACT */
+  .contact__grid { display: grid; gap: 2.5rem; align-items: start; }
+  .contact__grid > * { min-width: 0; }
+  @media (min-width: 960px) { .contact__grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; } }
+  .contact__h { font-size: var(--step-4); font-weight: 400; margin-top: 0.8rem; line-height: 0.98; }
+  .contact__h em { color: var(--red); }
+  .contact__p { font-size: var(--step-1); color: var(--ink-2); margin-top: 1.2rem; max-width: 30rem; }
+  .channels { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+  .channel { display: grid; grid-template-columns: 52px minmax(0, 1fr) 28px; align-items: center; gap: 1rem; min-height: 76px; padding: 0.8rem 1.2rem 0.8rem 0.8rem; background: #fff; border: 1.5px solid var(--rule); text-decoration: none; transition: border-color 0.2s, transform 0.25s var(--ease); }
+  .channel:hover { border-color: var(--ink); transform: translateX(4px); }
+  .channel__i { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--paper-2); }
+  .channel__i :global(svg) { width: 24px; height: 24px; }
+  .channel__txt { display: grid; min-width: 0; }
+  .channel__txt b { font-family: var(--f-display); font-weight: 500; font-size: 1.35rem; line-height: 1.2; }
+  .channel__txt span { font-size: 0.86rem; color: var(--ink-3); overflow-wrap: anywhere; }
+  .channel__arrow :global(svg) { width: 24px; height: 24px; }
+  .channel--primary { background: var(--board); border-color: var(--board); color: var(--chalk); min-height: 92px; }
+  .channel--primary .channel__i { background: var(--red); color: #fff; }
+  .channel--primary .channel__txt span { color: var(--chalk-2); }
+  .channel--primary:hover { border-color: var(--board); }
+  @media (prefers-reduced-motion: reduce) { .channel:hover { transform: none; } }
 </style>
-

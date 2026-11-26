@@ -3,8 +3,7 @@
  * Mathematically exact miniature figures, computed at build time
  * (curves are sampled from the real functions — no decorative squiggles).
  */
-import type { Chapter } from '../data/chapters';
-interface Props { kind: Chapter['figure']; class?: string; label?: string }
+interface Props { kind: 'limit' | 'tangent' | 'sym' | 'cobweb' | 'ln' | 'complex' | 'exp' | 'diffeq' | 'integral' | 'space' | 'proba'; class?: string; label?: string }
 const { kind, class: cls, label } = Astro.props;
 
 const W = 320, H = 200;
@@ -121,7 +120,7 @@ switch (kind) {
 <svg class:list={['chfig', cls]} viewBox={`0 0 ${W} ${H + 24}`} role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : 'true'} focusable="false" set:html={svg} />
 
 <style is:global>
-  .chfig { width: 100%; height: auto; overflow: visible; color: var(--ink); }
+  .chfig { width: 100%; height: auto; overflow: hidden; color: var(--ink); }
   .chfig .ax { stroke: currentColor; stroke-width: 1; opacity: 0.35; fill: none; }
   .chfig .cv { stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .chfig .tg { stroke: var(--blue); stroke-width: 2; fill: none; stroke-linecap: round; }

@@ -1,42 +1,37 @@
 /**
- * Centralised identity & configuration.
- * Every factual field below was verified on 2026-11-26 from the teacher's
- * public Instagram profile and official YouTube channel. Anything that is
- * not verified is explicitly flagged as demo content in the UI.
+ * Centralised identity & configuration (showcase scope).
+ * Verified on 2026-11-26 from the teacher's public Instagram profile
+ * (@prof_hakimi_maths) and official YouTube channel (@prof_hakimi_maths).
  */
 export const identity = {
   brand: 'Prof Hakimi maths',
-  shortBrand: 'Prof Hakimi',
   fullName: 'Hicham Hakimi',
-  roles: ['Professeur de mathématiques', 'Chercheur en mathématiques'], // Instagram bio
   handle: '@prof_hakimi_maths',
-  levels: {
-    verified: ['2ᵉ année Bac — Sciences expérimentales (PC)', 'Préparation aux concours post-bac'],
-  },
-  languages: 'Cours en français et en arabe (darija)',
-  youtubeSince: 'novembre 2025',
+  roles: ['Professeur de mathématiques', 'Chercheur en mathématiques'], // Instagram bio
 } as const;
 
-export const links = {
+/**
+ * Official channels. Only verified URLs.
+ * WhatsApp number to be inserted on the teacher's approval: keep `null`
+ * until then — the WhatsApp button is not rendered while null.
+ */
+export const contact = {
+  instagramDM: 'https://ig.me/m/prof_hakimi_maths',
   instagram: 'https://www.instagram.com/prof_hakimi_maths/',
   youtube: 'https://www.youtube.com/@prof_hakimi_maths',
   threads: 'https://www.threads.com/@prof_hakimi_maths',
+  whatsapp: null as string | null, // e.g. 'https://wa.me/212XXXXXXXXX' — on approval only
+  email: null as string | null, // none publicly listed
   studio: 'https://mansourtechnologies.com/',
-} as const;
+};
 
 export const nav = [
-  { href: '', label: 'Accueil', short: 'Accueil' },
-  { href: 'cours/', label: 'Chapitres', short: 'Cours' },
-  { href: 'videos/', label: 'Vidéothèque', short: 'Vidéos' },
-  { href: 'labo/', label: 'Labo des fonctions', short: 'Labo' },
-  { href: 'examen/', label: 'Examen national', short: 'Examen' },
-  { href: 'mon-espace/', label: 'Mon espace', short: 'Espace' },
+  { href: '#professeur', label: 'Le professeur' },
+  { href: '#approche', label: 'Approche' },
+  { href: '#programme', label: 'Programme' },
+  { href: '#videos', label: 'Vidéos' },
+  { href: '#etudier', label: 'Étudier avec lui' },
+  { href: '#contact', label: 'Contact' },
 ] as const;
 
 export const notice = 'Concept de site internet proposé par Mansour Technologies — Démonstration non officielle.';
-
-/** Assets that must be replaced once the teacher grants permission. */
-export const replaceOnApproval = [
-  'Portrait principal (accueil) — emplacement « portrait-slot » : photo officielle de Hicham Hakimi au tableau.',
-  'Image Open Graph (public/og.png) — pourrait intégrer sa photo une fois autorisée.',
-];

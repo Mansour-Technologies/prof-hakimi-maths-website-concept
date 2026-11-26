@@ -3,13 +3,13 @@ import Base from '../layouts/Base.astro';
 import { url } from '../lib/url';
 import { tex } from '../lib/tex';
 ---
-<Base title="Page introuvable" active="404" description="Cette page n'existe pas.">
+<Base title="Page introuvable — Prof Hakimi maths" description="Cette page n'existe pas." home={false}>
   <section class="page-hero board chalk-grid nf">
     <div class="wrap">
       <p class="kicker"><span class="dot"></span> Erreur 404</p>
       <h1>Hors du <em>domaine</em></h1>
       <p class="lead">Cette adresse n’appartient pas au domaine de définition du site&nbsp;: <span set:html={tex('x\\notin D_f')} />.</p>
-      <p style="margin-top:1.5rem;display:flex;gap:.6rem;flex-wrap:wrap"><a class="btn btn--chalk" href={url('')}>Retour à l’accueil</a><a class="btn btn--ghost" href={url('cours/')}>Voir les chapitres</a></p>
+      <p style="margin-top:1.5rem;display:flex;gap:.6rem;flex-wrap:wrap"><a class="btn btn--chalk" href={url('')}>Retour à l’accueil</a><a class="btn btn--ghost" href={url('') + '#contact'}>Contacter le professeur</a></p>
     </div>
   </section>
 </Base>

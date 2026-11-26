@@ -30,7 +30,7 @@ p{font-size:27px;color:#eceee6;margin:34px 0 0;max-width:600px;line-height:1.35}
 <line x1="${OX + (x0 - 2.4) * U}" y1="${OY - (y0 - m * 2.4) * U}" x2="${OX + (x0 + 2.4) * U}" y2="${OY - (y0 + m * 2.4) * U}" stroke="#f3d46b" stroke-width="4"/>
 <circle cx="${OX + x0 * U}" cy="${OY - y0 * U}" r="13" fill="#ff7657" stroke="#111915" stroke-width="5"/></svg>
 <div class="t"><div class="k"><i style="background:#c42f17"></i><i style="background:#e2801c"></i><i style="background:#17784d"></i><i style="background:#eceee6"></i> Prof Hakimi maths</div>
-<h1>Hicham<em>Hakimi</em></h1><p>Mathématiques 2ᵉ BAC — chapitres, vidéos, labo de fonctions, examen national.</p></div>
+<h1>Hicham<em>Hakimi</em></h1><p>Professeur &amp; chercheur en mathématiques — 2ᵉ BAC Sciences expérimentales, préparation des concours.</p></div>
 <div class="b">CONCEPT DE SITE — DÉMONSTRATION NON OFFICIELLE</div></body></html>`;
 const b = await chromium.launch();
 const pg = await b.newPage({ viewport: { width: 1200, height: 630 } });
