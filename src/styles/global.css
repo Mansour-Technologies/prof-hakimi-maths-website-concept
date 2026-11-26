@@ -183,7 +183,7 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 .board .h-ar { color: var(--chalk-3); }
 .hand { font-family: var(--f-hand); font-weight: 600; }
 .demo-tag { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--orange-ink); border: 1px dashed currentColor; padding: 0.2em 0.6em; border-radius: 3px; }
-.board .demo-tag { color: var(--orange); }
+.board .demo-tag, .site-footer .demo-tag { color: var(--orange); }
 
 /* ——— Page hero (inner pages) ——— */
 .page-hero { position: relative; overflow: hidden; padding-block: clamp(2.5rem, 2rem + 4vw, 5.5rem) clamp(2rem, 1.5rem + 3vw, 4rem); }

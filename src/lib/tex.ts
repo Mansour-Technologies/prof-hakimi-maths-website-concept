@@ -23,3 +23,13 @@ export const tx = (src: string) => {
   out.push(esc(src.slice(last)).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'));
   return out.join('');
 };
+
+/** Rough plain-text reading of a short LaTeX snippet (for accessible names of MCQ options). */
+export const plain = (src: string) =>
+  src
+    .replace(/\$/g, '')
+    .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)')
+    .replace(/\\sqrt\{([^{}]*)\}/g, '√($1)')
+    .replace(/\\pi/g, 'π').replace(/\\mapsto/g, '↦').replace(/\\ln/g, 'ln').replace(/\\le/g, '≤').replace(/\\ge/g, '≥')
+    .replace(/e\^\{([^{}]*)\}/g, 'e^($1)')
+    .replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();

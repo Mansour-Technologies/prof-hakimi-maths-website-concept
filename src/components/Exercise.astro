@@ -2,7 +2,7 @@
 import type { Exercise } from '../data/exercises';
 import { difficultyLabel } from '../data/exercises';
 import { chapterBySlug } from '../data/chapters';
-import { tx } from '../lib/tex';
+import { tx, plain } from '../lib/tex';
 interface Props { ex: Exercise; index?: number; showChapter?: boolean; headingLevel?: 'h3' | 'h4' }
 const { ex, index, showChapter = false, headingLevel = 'h3' } = Astro.props;
 const H = headingLevel;
@@ -38,7 +38,7 @@ const uid = `ex-${ex.id}`;
       <fieldset class="ex__mcq">
         <legend class="sr-only">Choisissez une réponse</legend>
         {ex.options.map((o, i) => (
-          <label class="opt"><input type="radio" name={`${uid}-q`} value={String(i)} /><span set:html={tx(o)} /></label>
+          <label class="opt"><input type="radio" name={`${uid}-q`} value={String(i)} aria-label={plain(o)} /><span set:html={tx(o)} aria-hidden="true" /></label>
         ))}
         <button class="btn" type="submit">Vérifier</button>
       </fieldset>
