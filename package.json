@@ -1,0 +1,28 @@
+{
+  "name": "prof-hakimi-maths-website-concept",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "test": "playwright test",
+    "test:live": "BASE_URL=https://mansour-technologies.github.io/prof-hakimi-maths-website-concept/ playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/caveat": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource/amiri": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "astro": "^7.4.13",
+    "katex": "^0.19.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@playwright/test": "^1.65.1",
+    "@types/katex": "^0.16.8",
+    "typescript": "^6.0.3"
+  }
+}
