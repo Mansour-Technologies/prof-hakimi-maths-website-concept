@@ -23,6 +23,7 @@
     "@astrojs/check": "^0.9.12",
     "@playwright/test": "^1.65.1",
     "@types/katex": "^0.16.8",
+    "@types/node": "^22.20.7",
     "typescript": "^6.0.3"
   }
 }

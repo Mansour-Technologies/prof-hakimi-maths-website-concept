@@ -45,6 +45,9 @@ for (let k = -2; k <= 2; k++) if (k) ticks.push(`M${OX - 7} ${Y(k)}H${OX + 7}`);
 
 <style>
   .heroplot { position: absolute; inset: 0; width: 100%; height: 100%; }
+  @media (max-width: 899px) {
+    .heroplot { inset: auto; top: 0; left: -120%; width: 260%; max-width: none; height: 58%; opacity: 0.6; }
+  }
   .heroplot__curve { fill: none; stroke: url(#hp-fade); stroke-width: 3.2; stroke-linecap: round; opacity: 0.9; }
   .heroplot__tan { stroke: url(#hp-fade-t); stroke-width: 2.6; stroke-linecap: round; }
   .heroplot__drop { stroke: rgba(236, 238, 230, 0.35); stroke-width: 1.5; stroke-dasharray: 6 7; }
