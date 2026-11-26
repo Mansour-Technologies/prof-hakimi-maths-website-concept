@@ -1,0 +1,100 @@
+---
+/**
+ * Hero signature: the curve of f(x) = x³/4 − x drawn on the board,
+ * with its tangent sliding along it (exact derivative f'(x) = 3x²/4 − 1).
+ * Path sampled at build time; the tangent is animated by a tiny script.
+ */
+const W = 1600, H = 900, U = 170; // px per unit (isotropic)
+const OX = 980, OY = 470; // origin position
+const X = (x: number) => OX + x * U;
+const Y = (y: number) => OY - y * U;
+const f = (x: number) => x ** 3 / 4 - x;
+let d = '';
+for (let i = 0; i <= 400; i++) {
+  const x = -6 + (9.5 * i) / 400;
+  const y = f(x);
+  if (y > 4 || y < -4) continue;
+  d += `${d ? 'L' : 'M'}${X(x).toFixed(1)} ${Y(y).toFixed(1)}`;
+}
+const ticks: string[] = [];
+for (let k = -5; k <= 3; k++) if (k) ticks.push(`M${X(k)} ${OY - 7}V${OY + 7}`);
+for (let k = -2; k <= 2; k++) if (k) ticks.push(`M${OX - 7} ${Y(k)}H${OX + 7}`);
+---
+<svg class="heroplot" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"
+  data-heroplot data-u={U} data-ox={OX} data-oy={OY}>
+  <defs>
+    <linearGradient id="hp-fade" gradientUnits="userSpaceOnUse" x1="420" y1="0" x2="900" y2="0">
+      <stop offset="0" stop-color="#eceee6" stop-opacity="0.06" /><stop offset="1" stop-color="#eceee6" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="hp-fade-t" gradientUnits="userSpaceOnUse" x1="420" y1="0" x2="900" y2="0">
+      <stop offset="0" stop-color="#f3d46b" stop-opacity="0.08" /><stop offset="1" stop-color="#f3d46b" stop-opacity="1" />
+    </linearGradient>
+    <pattern id="hp-grid" width={U / 2} height={U / 2} patternUnits="userSpaceOnUse" x={OX % (U / 2)} y={OY % (U / 2)}>
+      <path d={`M${U / 2} 0H0V${U / 2}`} fill="none" stroke="rgba(236,238,230,.055)" />
+    </pattern>
+  </defs>
+  <rect width={W} height={H} fill="url(#hp-grid)" />
+  <path d={`M0 ${OY}H${W}M${OX} 0V${H}`} stroke="rgba(236,238,230,.32)" stroke-width="1.5" />
+  <path d={ticks.join('')} stroke="rgba(236,238,230,.32)" stroke-width="1.5" />
+  <path class="heroplot__curve" d={d} pathLength="1" />
+  <line class="heroplot__tan" data-tan x1="0" y1="0" x2="0" y2="0" />
+  <line class="heroplot__drop" data-drop x1="0" y1="0" x2="0" y2="0" />
+  <circle class="heroplot__pt" data-pt r="9" cx={X(1.6)} cy={Y(f(1.6))} />
+  <text class="heroplot__lbl" x={X(2.65)} y={Y(f(2.65)) - 24}>𝒞<tspan baseline-shift="sub" font-size="26">f</tspan></text>
+</svg>
+
+<style>
+  .heroplot { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .heroplot__curve { fill: none; stroke: url(#hp-fade); stroke-width: 3.2; stroke-linecap: round; opacity: 0.9; }
+  .heroplot__tan { stroke: url(#hp-fade-t); stroke-width: 2.6; stroke-linecap: round; }
+  .heroplot__drop { stroke: rgba(236, 238, 230, 0.35); stroke-width: 1.5; stroke-dasharray: 6 7; }
+  .heroplot__pt { fill: var(--red-hi); stroke: var(--board); stroke-width: 4; }
+  .heroplot__lbl { font-family: var(--f-math); font-style: italic; font-size: 40px; fill: var(--chalk-2); }
+  @media (prefers-reduced-motion: no-preference) {
+    .heroplot__curve { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hp-draw 2.4s 0.2s var(--ease) forwards; }
+    .heroplot__tan, .heroplot__pt, .heroplot__drop { opacity: 0; animation: hp-fade 0.6s 2.2s forwards; }
+    @keyframes hp-draw { to { stroke-dashoffset: 0; } }
+    @keyframes hp-fade { to { opacity: 1; } }
+  }
+</style>
+
+<script>
+  const svg = document.querySelector<SVGSVGElement>('[data-heroplot]');
+  if (svg) {
+    const U = Number(svg.dataset.u), OX = Number(svg.dataset.ox), OY = Number(svg.dataset.oy);
+    const X = (x: number) => OX + x * U, Y = (y: number) => OY - y * U;
+    const f = (x: number) => x ** 3 / 4 - x, df = (x: number) => (3 * x * x) / 4 - 1;
+    const tan = svg.querySelector<SVGLineElement>('[data-tan]')!;
+    const drop = svg.querySelector<SVGLineElement>('[data-drop]')!;
+    const pt = svg.querySelector<SVGCircleElement>('[data-pt]')!;
+    const eqEl = document.querySelector<HTMLElement>('[data-eq]');
+    const x0El = document.querySelector<HTMLElement>('[data-x0]');
+    const fr = (v: number) => (Math.round(v * 100) / 100).toFixed(2).replace('.', ',').replace('-', '−');
+    const draw = (x0: number) => {
+      const y0 = f(x0), m = df(x0), p = y0 - m * x0, L = 2.6;
+      tan.setAttribute('x1', String(X(x0 - L))); tan.setAttribute('y1', String(Y(y0 - m * L)));
+      tan.setAttribute('x2', String(X(x0 + L))); tan.setAttribute('y2', String(Y(y0 + m * L)));
+      drop.setAttribute('x1', String(X(x0))); drop.setAttribute('y1', String(Y(0)));
+      drop.setAttribute('x2', String(X(x0))); drop.setAttribute('y2', String(Y(y0)));
+      pt.setAttribute('cx', String(X(x0))); pt.setAttribute('cy', String(Y(y0)));
+      if (eqEl) eqEl.textContent = `${fr(m)}x ${p < 0 ? '−' : '+'} ${fr(Math.abs(p))}`;
+      if (x0El) x0El.textContent = fr(x0);
+    };
+    draw(1.5);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      let t0 = 0, raf = 0, visible = true;
+      const loop = (t: number) => {
+        if (!t0) t0 = t;
+        const s = (t - t0) / 1000;
+        draw(1.6 * Math.cos(s * 0.42) + 0.15 * Math.sin(s * 0.9) - 0.1);
+        raf = requestAnimationFrame(loop);
+      };
+      const start = () => { if (!raf && visible) { t0 = 0; raf = requestAnimationFrame((t) => { t0 = t - 0; loop(t); }); } };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+      new IntersectionObserver(([e]) => { visible = !!e?.isIntersecting; visible ? start() : stop(); }).observe(svg);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+      setTimeout(start, 2600);
+    }
+  }
+</script>

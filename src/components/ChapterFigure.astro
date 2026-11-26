@@ -1,0 +1,139 @@
+---
+/**
+ * Mathematically exact miniature figures, computed at build time
+ * (curves are sampled from the real functions — no decorative squiggles).
+ */
+import type { Chapter } from '../data/chapters';
+interface Props { kind: Chapter['figure']; class?: string; label?: string }
+const { kind, class: cls, label } = Astro.props;
+
+const W = 320, H = 200;
+type R = [number, number];
+const mk = (xr: R, yr: R) => {
+  const X = (x: number) => ((x - xr[0]) / (xr[1] - xr[0])) * W;
+  const Y = (y: number) => H - ((y - yr[0]) / (yr[1] - yr[0])) * H;
+  const path = (f: (x: number) => number, a = xr[0], b = xr[1], n = 160) => {
+    let d = '';
+    let pen = false;
+    for (let i = 0; i <= n; i++) {
+      const x = a + ((b - a) * i) / n;
+      const y = f(x);
+      if (!Number.isFinite(y) || y < yr[0] - 5 || y > yr[1] + 5) { pen = false; continue; }
+      d += `${pen ? 'L' : 'M'}${X(x).toFixed(1)} ${Y(y).toFixed(1)} `;
+      pen = true;
+    }
+    return d.trim();
+  };
+  const axes = `M0 ${Y(0).toFixed(1)}H${W}M${X(0).toFixed(1)} 0V${H}`;
+  return { X, Y, path, axes };
+};
+
+let svg = '';
+const A = 'class="ax"', C = 'class="cv"', T = 'class="tg"', P = 'class="pt"', D = 'class="ds"', S = 'class="sh"', F = 'class="lb"';
+
+switch (kind) {
+  case 'limit': {
+    const g = mk([-1, 8], [-0.6, 4]);
+    const f = (x: number) => 3 - 2.6 / (1 + 0.35 * x * x);
+    svg = `<path ${A} d="${g.axes}"/><path ${D} d="M0 ${g.Y(3)}H${W}"/><path ${C} d="${g.path(f, -1, 8)}"/>
+      <text ${F} x="${W - 6}" y="${g.Y(3) - 8}" text-anchor="end">y = 3</text>`;
+    break;
+  }
+  case 'tangent': {
+    const g = mk([-2.6, 2.6], [-2.4, 3]);
+    const f = (x: number) => 0.5 * x ** 3 - 1.5 * x + 0.6;
+    const df = (x: number) => 1.5 * x * x - 1.5;
+    const x0 = 1.55, y0 = f(x0), m = df(x0);
+    svg = `<path ${A} d="${g.axes}"/><path ${C} d="${g.path(f)}"/><path ${T} d="${g.path((x) => m * (x - x0) + y0, x0 - 1.4, x0 + 1.1)}"/>
+      <circle ${P} cx="${g.X(x0)}" cy="${g.Y(y0)}" r="5"/>`;
+    break;
+  }
+  case 'sym': {
+    const g = mk([-1, 5], [-0.5, 7.5]);
+    const f = (x: number) => (x - 2) ** 2 + 1;
+    svg = `<path ${A} d="${g.axes}"/><path ${D} d="M${g.X(2)} 0V${H}"/><path ${C} d="${g.path(f)}"/>
+      <circle ${P} cx="${g.X(0.8)}" cy="${g.Y(f(0.8))}" r="4"/><circle ${P} cx="${g.X(3.2)}" cy="${g.Y(f(3.2))}" r="4"/>
+      <path ${T} d="M${g.X(0.8)} ${g.Y(f(0.8))}H${g.X(3.2)}"/><text ${F} x="${g.X(2) + 6}" y="16">x = 2</text>`;
+    break;
+  }
+  case 'cobweb': {
+    const g = mk([-0.5, 8], [-0.5, 7.5]);
+    const h = (x: number) => 0.5 * x + 3;
+    let u = 0, d = `M${g.X(u)} ${g.Y(0)}`;
+    for (let i = 0; i < 6; i++) { const v = h(u); d += ` L${g.X(u)} ${g.Y(v)} L${g.X(v)} ${g.Y(v)}`; u = v; }
+    svg = `<path ${A} d="${g.axes}"/><path ${D} d="${g.path((x) => x)}"/><path ${C} d="${g.path(h)}"/><path ${T} d="${d}"/>
+      <circle ${P} cx="${g.X(6)}" cy="${g.Y(6)}" r="4.5"/><text ${F} x="${g.X(6) - 8}" y="${g.Y(6) + 22}" text-anchor="end">ℓ = 6</text>`;
+    break;
+  }
+  case 'ln': {
+    const g = mk([-0.5, 6], [-2.6, 2.6]);
+    svg = `<path ${A} d="${g.axes}"/><path ${C} d="${g.path(Math.log, 0.06, 6, 200)}"/><path ${T} d="${g.path((x) => x - 1, -0.3, 3.6)}"/>
+      <circle ${P} cx="${g.X(1)}" cy="${g.Y(0)}" r="4.5"/><text ${F} x="${g.X(3.4)}" y="${g.Y(2.35)}">y = x − 1</text>`;
+    break;
+  }
+  case 'complex': {
+    const g = mk([-1.9, 2.2], [-1.25, 1.35]);
+    const r = g.X(1) - g.X(0);
+    const zx = g.X(0.5), zy = g.Y(Math.sqrt(3) / 2);
+    svg = `<path ${A} d="${g.axes}"/><circle ${D} cx="${g.X(0)}" cy="${g.Y(0)}" r="${r}" fill="none"/>
+      <path ${C} d="M${g.X(0)} ${g.Y(0)}L${zx} ${zy}"/><path ${T} d="M${g.X(0.42)} ${g.Y(0)} A ${r * 0.42} ${r * 0.42} 0 0 0 ${g.X(0.21)} ${g.Y(0.364)}"/>
+      <circle ${P} cx="${zx}" cy="${zy}" r="5"/><text ${F} x="${zx + 10}" y="${zy - 6}">e<tspan baseline-shift="super" font-size="14">iπ/3</tspan></text>`;
+    break;
+  }
+  case 'exp': {
+    const g = mk([-3, 2.2], [-0.8, 6]);
+    svg = `<path ${A} d="${g.axes}"/><path ${C} d="${g.path(Math.exp)}"/><path ${T} d="${g.path((x) => x + 1, -1.8, 2)}"/>
+      <circle ${P} cx="${g.X(0)}" cy="${g.Y(1)}" r="4.5"/><text ${F} x="${g.X(0.9)}" y="${g.Y(1.2)}">y = x + 1</text>`;
+    break;
+  }
+  case 'diffeq': {
+    const g = mk([-0.3, 5], [-0.5, 5]);
+    const curves = [-2, -1, 1, 2, 3].map((c) => `<path ${C} d="${g.path((x) => c * Math.exp(-x) + 2, 0, 5)}" opacity="${0.45 + Math.abs(c) * 0.15}"/>`).join('');
+    svg = `<path ${A} d="${g.axes}"/><path ${T} d="M0 ${g.Y(2)}H${W}"/>${curves}<text ${F} x="${W - 6}" y="${g.Y(2) - 8}" text-anchor="end">y = 2</text>`;
+    break;
+  }
+  case 'integral': {
+    const g = mk([-0.4, 3.4], [-0.4, 3.2]);
+    const f = (x: number) => 0.35 * x * x + 0.4 * Math.sin(2 * x) + 0.6;
+    const a = 0.7, b = 2.6;
+    const area = `${g.path(f, a, b)} L${g.X(b)} ${g.Y(0)} L${g.X(a)} ${g.Y(0)} Z`;
+    svg = `<path ${S} d="${area}"/><path ${A} d="${g.axes}"/><path ${C} d="${g.path(f)}"/>
+      <path ${D} d="M${g.X(a)} ${g.Y(0)}V${g.Y(f(a))}M${g.X(b)} ${g.Y(0)}V${g.Y(f(b))}"/>
+      <text ${F} x="${g.X(a)}" y="${g.Y(0) + 18}" text-anchor="middle">a</text><text ${F} x="${g.X(b)}" y="${g.Y(0) + 18}" text-anchor="middle">b</text>`;
+    break;
+  }
+  case 'space': {
+    // oblique projection of the plane z = 0 patch, normal vector and a point
+    svg = `<path class="sh" d="M40 140 L200 160 L290 100 L130 82 Z"/><path ${C} d="M40 140 L200 160 L290 100 L130 82 Z" fill="none"/>
+      <path ${T} d="M165 121 L165 36"/><path ${T} d="M158 46 L165 34 L172 46" fill="none"/>
+      <circle ${P} cx="232" cy="40" r="5"/><path ${D} d="M232 40 L232 112"/><text ${F} x="242" y="38">A</text><text ${F} x="176" y="44">n⃗</text>`;
+    break;
+  }
+  case 'proba': {
+    const vals = [1, 4, 6, 4, 1];
+    const bw = 40, gap = 18, x0 = 30, base = 175, unit = 24;
+    svg = `<path ${A} d="M0 ${base}H${W}"/>` + vals.map((v, i) => `<rect class="${i === 2 ? 'bar bar--hi' : 'bar'}" x="${x0 + i * (bw + gap)}" y="${base - v * unit}" width="${bw}" height="${v * unit}"/><text ${F} x="${x0 + i * (bw + gap) + bw / 2}" y="${base + 18}" text-anchor="middle">${i}</text>`).join('') +
+      `<text ${F} x="${x0 + 2 * (bw + gap) + bw / 2}" y="${base - 6 * unit - 8}" text-anchor="middle">6/16</text>`;
+    break;
+  }
+}
+---
+<svg class:list={['chfig', cls]} viewBox={`0 0 ${W} ${H + 24}`} role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : 'true'} focusable="false" set:html={svg} />
+
+<style is:global>
+  .chfig { width: 100%; height: auto; overflow: visible; color: var(--ink); }
+  .chfig .ax { stroke: currentColor; stroke-width: 1; opacity: 0.35; fill: none; }
+  .chfig .cv { stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .chfig .tg { stroke: var(--blue); stroke-width: 2; fill: none; stroke-linecap: round; }
+  .chfig .ds { stroke: currentColor; stroke-width: 1.2; stroke-dasharray: 5 5; fill: none; opacity: 0.55; }
+  .chfig .pt { fill: var(--red); }
+  .chfig .sh { fill: var(--blue); opacity: 0.12; }
+  .chfig .lb { font-family: var(--f-hand); font-size: 19px; fill: var(--red); font-weight: 600; }
+  .chfig .bar { fill: currentColor; opacity: 0.18; }
+  .chfig .bar--hi { fill: var(--red); opacity: 0.9; }
+  .board .chfig { color: var(--chalk); }
+  .board .chfig .tg { stroke: var(--chalk-yellow); }
+  .board .chfig .pt { fill: var(--red-hi); }
+  .board .chfig .lb { fill: var(--chalk-yellow); }
+  .board .chfig .sh { fill: var(--chalk-yellow); opacity: 0.16; }
+</style>

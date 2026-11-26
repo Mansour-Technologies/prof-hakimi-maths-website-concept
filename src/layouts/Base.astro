@@ -1,0 +1,135 @@
+---
+import '@fontsource-variable/fraunces/opsz.css';
+import '@fontsource-variable/fraunces/wght-italic.css';
+import '@fontsource-variable/ibm-plex-sans/wght.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+import '@fontsource/amiri/arabic-400.css';
+import '@fontsource/amiri/arabic-700.css';
+import '@fontsource-variable/caveat/wght.css';
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+import Mark from '../components/Mark.astro';
+import Icon from '../components/Icon.astro';
+import { nav, notice, links, identity } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props { title: string; description: string; active?: string }
+const { title, description, active = '' } = Astro.props;
+const fullTitle = active === '' ? `${identity.brand} — ${title}` : `${title} · ${identity.brand}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const og = new URL(url('og.png'), Astro.site).href;
+const isActive = (href: string) => href === active;
+const tabs = [
+  { href: 'cours/', label: 'Cours', icon: 'book' },
+  { href: 'videos/', label: 'Vidéos', icon: 'play' },
+  { href: 'labo/', label: 'Labo', icon: 'curve' },
+  { href: 'examen/', label: 'Examen', icon: 'exam' },
+] as const;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#111915" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_MA" />
+    <meta property="og:title" content={`${fullTitle} (concept non officiel)`} />
+    <meta property="og:description" content={description + ' Concept de démonstration non officiel.'} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Concept de site pour Prof Hakimi maths — démonstration non officielle" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${fullTitle} (concept)`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Aller au contenu</a>
+    <p class="notice" role="note" data-demo-notice><strong>{notice.split(' — ')[0]}</strong> — {notice.split(' — ')[1]}</p>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="wordmark" href={url('')} aria-label="Prof Hakimi maths — accueil">
+          <Mark />
+          <b>Hakimi</b><i>maths</i>
+        </a>
+        <nav class="mainnav" aria-label="Navigation principale">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={url(n.href)} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div>
+          <a class="wordmark" href={url('')}><Mark /><b>Hakimi</b><i>maths</i></a>
+          <p style="margin-top:1rem;max-width:34rem">
+            Concept de plateforme pour les cours de mathématiques de {identity.fullName} — 2ᵉ BAC Sciences expérimentales et préparation des concours.
+          </p>
+          <p class="demo-tag">Démonstration non officielle</p>
+        </div>
+        <div>
+          <h2>Explorer</h2>
+          <ul>{nav.map((n) => <li><a href={url(n.href)}>{n.label}</a></li>)}</ul>
+        </div>
+        <div>
+          <h2>Canaux officiels du professeur</h2>
+          <ul>
+            <li><a href={links.instagram} rel="noopener" target="_blank">Instagram — {identity.handle}<span class="sr-only"> (nouvel onglet)</span></a></li>
+            <li><a href={links.youtube} rel="noopener" target="_blank">YouTube — Prof Hakimi maths<span class="sr-only"> (nouvel onglet)</span></a></li>
+            <li><a href={links.threads} rel="noopener" target="_blank">Threads — {identity.handle}<span class="sr-only"> (nouvel onglet)</span></a></li>
+          </ul>
+        </div>
+        <div class="footer-legal">
+          <p style="margin:0">{notice} Aucune inscription, aucun paiement, aucune donnée personnelle collectée.</p>
+          <p style="margin:0"><a href={links.studio} rel="noopener" target="_blank">Concept digital proposé par Mansour Technologies.</a></p>
+        </div>
+      </div>
+    </footer>
+
+    <nav class="tabbar" aria-label="Navigation mobile">
+      {tabs.map((t) => (
+        <a href={url(t.href)} aria-current={isActive(t.href) ? 'page' : undefined}><Icon name={t.icon} />{t.label}</a>
+      ))}
+      <button type="button" data-sheet-open aria-haspopup="dialog" aria-controls="sheet" aria-expanded="false"><Icon name="menu" />Menu</button>
+    </nav>
+    <div class="sheet-backdrop" data-sheet-backdrop hidden></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+      <div class="sheet__grab" aria-hidden="true"></div>
+      <div class="sheet__head">
+        <h2 id="sheet-title">Menu</h2>
+        <button type="button" class="icon-btn" data-sheet-close aria-label="Fermer le menu"><Icon name="close" /></button>
+      </div>
+      <ul>
+        {nav.map((n, i) => (
+          <li><a href={url(n.href)} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}<span>{String(i).padStart(2, '0')}</span></a></li>
+        ))}
+      </ul>
+      <div class="sheet__links">
+        <a class="icon-btn" href={links.instagram} target="_blank" rel="noopener" aria-label="Instagram du professeur (nouvel onglet)"><Icon name="ig" /></a>
+        <a class="icon-btn" href={links.youtube} target="_blank" rel="noopener" aria-label="Chaîne YouTube du professeur (nouvel onglet)"><Icon name="yt" /></a>
+        <a class="icon-btn" href={links.threads} target="_blank" rel="noopener" aria-label="Threads du professeur (nouvel onglet)"><Icon name="threads" /></a>
+      </div>
+    </div>
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+
+    <script>
+      import '../scripts/shell';
+    </script>
+  </body>
+</html>
