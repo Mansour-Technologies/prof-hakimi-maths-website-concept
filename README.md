@@ -1,55 +1,52 @@
-# Prof Hakimi maths — concept de site (démonstration non officielle)
+# Prof Hakimi maths — concept de site vitrine (démonstration non officielle)
 
 > **Concept de site internet proposé par Mansour Technologies — Démonstration non officielle.**
-> This repository is an unsolicited design proposal. It is **not** the official website of Prof Hakimi maths, is not commissioned, endorsed or affiliated, and collects no data.
+> Unsolicited design proposal. Not the official website of Prof Hakimi maths; not commissioned, endorsed or affiliated. No data is collected, no cookies are set by this site.
 
 Live demo: https://mansour-technologies.github.io/prof-hakimi-maths-website-concept/
 
 ## Overview
-A premium mathematics education hub concept for the Moroccan teacher behind the public channels **@prof_hakimi_maths** (Instagram / YouTube): 2ᵉ BAC Sciences expérimentales lessons organised by chapter, his official YouTube videos, an interactive function lab, BAC-style practice and a local demo dashboard.
+A premium single-page showcase ("site vitrine") for the Moroccan mathematics teacher behind the public channels **@prof_hakimi_maths** (Instagram / YouTube / Threads).
 
-Design direction « Tableau & Tangente »: chalkboard + whiteboard pages, Fraunces / IBM Plex Sans / Amiri (Arabic) / Caveat, KaTeX math, colour code taken from the 🔴🟠🟢⚪ markers of his public bio.
+Sections: hero (name, handle, subject, levels, animated curve and tangent) · Le professeur · Approche pédagogique · Programme (levels + chapters he has publicly covered) · Au tableau (a few official videos) · Étudier avec lui (3 steps) · Contact (verified channels).
 
-## Features
-- Personalised hero with an exact, animated tangent to f(x) = x³/4 − x (SVG + tiny script, respects reduced motion).
-- Chapters (11, programme 2ᵉ BAC SE): search (accent-insensitive), semester / status filters, chapter pages with original summaries, KaTeX formulas rendered at build time, checklists, demo progress, bookmarks.
-- Vidéothèque: the 36 public videos of the official channel (IDs verified via YouTube oEmbed on 2026-11-26), grouped by chapter/theme, click-to-load `youtube-nocookie.com` facades, no autoplay.
-- Labo des fonctions: Canvas plotter with 5 families (exact symbolic f′) + free expression (custom recursive-descent parser — no `eval`), sliders a, b, c, d, draggable / tappable point, pan, pinch & wheel zoom, live f′ curve, tangent equation in KaTeX, numerical check of the derivative, reset.
-- Centre examen: 43 original exercises (numeric with tolerance / MCQ) with worked corrections, chapter + difficulty filters, guided exam-style problems, timed mode, revision checklist, session summary.
-- Mon espace: progress per chapter, results, bookmarks, goals, session history, recommended next lesson, reset — `localStorage` only, validated against corrupted data.
-- Mobile-first details: bottom tab bar + accessible menu sheet (focus trap, Escape, focus return), sticky lab canvas on phones, 48px touch targets.
+Design direction « Tableau & Tangente »: chalkboard + whiteboard surfaces, Fraunces / IBM Plex Sans / Amiri (Arabic) / Caveat, KaTeX notation rendered at build time, mathematically exact SVG figures, colour code from the 🔴🟠🟢⚪ markers of his public bio.
 
 ## Stack
-Astro 7 (static) · TypeScript · CSS custom properties · KaTeX (self-hosted) · Fontsource (self-hosted fonts) · Playwright.
+Astro 7 (static, one page + 404) · TypeScript · CSS custom properties · KaTeX (self-hosted, build-time) · Fontsource (self-hosted fonts) · Playwright. Client JS: menu sheet, scroll reveal, section spy, YouTube click-to-load facade, hero tangent animation (reduced-motion aware). No localStorage.
 
 ## Develop
 ```bash
 npm ci
 npm run dev        # http://localhost:4321/prof-hakimi-maths-website-concept/
 npm run build      # astro check + static build to dist/
-npm test           # Playwright (starts astro preview on :4391)
-npm run test:live  # same suite against the GitHub Pages URL
+npm test           # Playwright (astro preview on :4391), desktop 1440 + mobile 375
+npm run test:live  # same suite against GitHub Pages
 node scripts/og.mjs  # re-render public/og.png
 ```
 
 ## Deploy
-Push to `main` → `.github/workflows/deploy.yml` builds with Node 22 and publishes `dist/` to GitHub Pages.
+Push to `main` → `.github/workflows/deploy.yml` (Node 22, `npm ci`, `npm run build`, upload `dist/`, deploy to Pages).
+
+## Configuration
+`src/data/site.ts` holds identity, navigation and contact URLs.
+**WhatsApp number to be inserted on the teacher's approval**: `contact.whatsapp` is `null`, so no WhatsApp button is rendered and the Instagram DM (`https://ig.me/m/prof_hakimi_maths`) is the primary contact.
 
 ## Content & asset attribution
-- **Videos**: embedded from the teacher's official public YouTube channel through the YouTube player (youtube-nocookie). Thumbnails are loaded from `i.ytimg.com`; nothing is rehosted.
-- **Photographs**: none used. A clearly labelled portrait placeholder awaits an authorised photo.
-- **Exercises, summaries, figures, hero animation, OG image**: original work for this concept (demonstration content, not official exam subjects).
-- **Fonts**: Fraunces, IBM Plex Sans, IBM Plex Sans Arabic, Amiri, Caveat — SIL Open Font License, via Fontsource. **KaTeX** — MIT.
+- Videos: official public YouTube videos of the teacher, embedded via youtube-nocookie only after a click; thumbnails served by `i.ytimg.com`. Nothing rehosted.
+- Photographs: none. The hero portrait is a labelled placeholder ("Photo officielle — à fournir / sur validation").
+- Copy, figures, hero animation, OG image: original work for this concept. Facts are limited to what his public profiles show (checked on 2026-11-26).
+- Fonts: Fraunces, IBM Plex Sans, IBM Plex Sans Arabic, Amiri, Caveat (SIL OFL, via Fontsource). KaTeX (MIT).
 
 ### To replace on approval
-1. `src/components/PortraitSlot.astro` (home hero) → official portrait of the teacher.
-2. `public/og.png` → may include the authorised portrait.
-3. Contact / registration links → only once the teacher provides official channels for them.
+1. `src/components/PortraitSlot.astro` → authorised official portrait.
+2. `public/og.png` → may include that portrait.
+3. `contact.whatsapp` (and email if he wishes) in `src/data/site.ts`.
+4. Career details and qualifications, to be supplied by the teacher.
 
 ## Known limitations
-- Progress is stored per browser (no accounts, no sync) — a real product needs a backend.
-- Chapters without a public video show an honest "à venir" state.
-- Levels other than 2ᵉ BAC SE were not verified publicly and are therefore not shown.
+- Levels other than 2ᵉ BAC Sciences expérimentales and concours preparation are not shown because they are not publicly stated.
+- Registration terms, prices and schedules are not published by the teacher, so none are shown.
 
 ## Rights
 All rights reserved — Mansour Technologies. No open-source licence is granted.
