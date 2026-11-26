@@ -119,6 +119,7 @@ const chapterNames = Object.fromEntries(chapters.map((c) => [c.slug, c.fr]));
       <div class="exlist" data-exlist>
         {single.map((e, i) => <Exercise ex={e} index={i + 1} showChapter />)}
       </div>
+      <p class="more"><button type="button" class="btn btn--ghost" data-more hidden>Afficher plus d’exercices</button></p>
 
       <h2 class="pb-title">Problèmes guidés type examen</h2>
       {groups.map((g) => (
@@ -175,6 +176,7 @@ const chapterNames = Object.fromEntries(chapters.map((c) => [c.slug, c.fr]));
   .count { font-size: 0.88rem; color: var(--ink-3); margin: 1rem 0; }
   .exlist { display: grid; gap: 1.2rem; }
   @media (min-width: 1100px) { .exlist { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .more { margin: 1.2rem 0 0; }
   .pb-title { font-size: var(--step-3); margin: 3.5rem 0 1rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
   .pb { margin-bottom: 2.5rem; }
   .pb__t { font-size: var(--step-1); font-family: var(--f-display); color: var(--blue); margin-bottom: 1rem; }
@@ -199,23 +201,33 @@ const chapterNames = Object.fromEntries(chapters.map((c) => [c.slug, c.fr]));
   const fCh = document.querySelector<HTMLSelectElement>('[data-f-ch]')!;
   const fTodo = document.querySelector<HTMLInputElement>('[data-f-todo]')!;
   let diff = 'all';
+  const PAGE = 10;
+  let limit = PAGE;
+  const moreBtn = document.querySelector<HTMLButtonElement>('[data-more]')!;
+  moreBtn.addEventListener('click', () => {
+    const firstNew = bankItems.filter((el) => el.hidden)[0];
+    limit += PAGE; applyFilters();
+    firstNew?.querySelector<HTMLElement>('input')?.focus();
+  });
   const applyFilters = () => {
     const res = load().results;
     let n = 0;
     for (const el of bankItems) {
       let show = (fCh.value === 'all' || el.dataset.chapter === fCh.value) && (diff === 'all' || el.dataset.difficulty === diff);
       if (fTodo.checked) show &&= !res[el.dataset.ex!]?.ok;
-      el.hidden = !show;
       if (show) n++;
+      el.hidden = !show || n > limit;
     }
-    document.querySelector('[data-f-count]')!.textContent = `${n} exercice${n > 1 ? 's' : ''} affiché${n > 1 ? 's' : ''}`;
+    moreBtn.hidden = n <= limit;
+    moreBtn.textContent = `Afficher plus d’exercices (${n - limit} restants)`;
+    document.querySelector('[data-f-count]')!.textContent = `${n} exercice${n > 1 ? 's' : ''} correspondant${n > 1 ? 's' : ''}`;
   };
   document.querySelectorAll<HTMLButtonElement>('[data-f-d]').forEach((b) => b.addEventListener('click', () => {
     document.querySelectorAll('[data-f-d]').forEach((x) => x.setAttribute('aria-pressed', 'false'));
-    b.setAttribute('aria-pressed', 'true'); diff = b.dataset.fD!; applyFilters();
+    b.setAttribute('aria-pressed', 'true'); diff = b.dataset.fD!; limit = PAGE; applyFilters();
   }));
-  fCh.addEventListener('change', applyFilters);
-  fTodo.addEventListener('change', applyFilters);
+  fCh.addEventListener('change', () => { limit = PAGE; applyFilters(); });
+  fTodo.addEventListener('change', () => { limit = PAGE; applyFilters(); });
   const pre = new URLSearchParams(location.search).get('chapitre');
   if (pre && [...fCh.options].some((o) => o.value === pre)) fCh.value = pre;
 
@@ -276,12 +288,13 @@ const chapterNames = Object.fromEntries(chapters.map((c) => [c.slug, c.fr]));
   const bank = document.querySelector<HTMLElement>('[data-bank]')!;
   const timeEl = document.querySelector<HTMLElement>('[data-time]')!;
   let chronoOn = false, chronoIds: string[] = [], timer = 0, remaining = 0, total = 0;
-  const homes = new Map<HTMLElement, { parent: Node; next: Node | null }>();
+  const homes = new Map<HTMLElement, boolean>();
   const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   function endChrono() {
     if (!chronoOn) return;
     clearInterval(timer); chronoOn = false;
-    for (const [el, h] of homes) h.parent.insertBefore(el, h.next);
+    const list = document.querySelector<HTMLElement>('[data-exlist]')!;
+    bankItems.forEach((el) => list.append(el));
     homes.clear();
     chrono.hidden = true; chronoList.hidden = true; bank.hidden = false;
     showSummary('chrono', chronoIds, total - remaining);
@@ -291,12 +304,12 @@ const chapterNames = Object.fromEntries(chapters.map((c) => [c.slug, c.fr]));
     e.preventDefault();
     const n = Number(document.querySelector<HTMLSelectElement>('[data-ch-n]')!.value);
     total = remaining = Number(document.querySelector<HTMLSelectElement>('[data-ch-t]')!.value);
-    const pool = bankItems.filter((el) => !el.hidden);
+    const saved = limit; limit = 999; applyFilters(); const pool = bankItems.filter((el) => !el.hidden); limit = saved;
     const pick = (pool.length >= n ? pool : bankItems).slice().sort(() => Math.random() - 0.5).slice(0, n);
     session = new Map(); summary.hidden = true;
     chronoIds = pick.map((el) => el.dataset.ex!);
     for (const el of pick) {
-      homes.set(el, { parent: el.parentNode!, next: el.nextSibling });
+      homes.set(el, true);
       el.hidden = false;
       el.dispatchEvent(new CustomEvent('ex:clear'));
       chronoList.append(el);

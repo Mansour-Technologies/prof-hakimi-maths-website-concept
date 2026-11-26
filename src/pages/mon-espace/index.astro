@@ -160,6 +160,7 @@ const exIndex = Object.fromEntries(exercises.map((e) => [e.id, e.chapter]));
     const prog = slugs.map((slug) => ({ slug, ...chapterProgress(s, slug, meta[slug]!.checks, meta[slug]!.ex) }));
     const overall = Math.round(prog.reduce((a, p) => a + p.pct, 0) / (prog.length || 1));
     q('[data-ring]').setAttribute('stroke-dasharray', `${overall} 100`);
+    q('[data-ring]').style.opacity = overall ? '1' : '0';
     q('[data-s-pct]').textContent = `${overall} %`;
     const solved = Object.entries(s.results).filter(([id, r]) => r.ok && exCh[id]).length;
     q('[data-s-ex]').textContent = `${solved} / ${Object.keys(exCh).length}`;

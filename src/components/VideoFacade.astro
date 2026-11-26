@@ -9,7 +9,7 @@ const thumb = `https://i.ytimg.com/vi/${video.id}/${size === 'lg' ? 'hqdefault' 
   <button type="button" class="yt__btn" data-yt={video.id} data-title={video.title}>
     <img src={thumb} alt="" width={size === 'lg' ? 480 : 320} height={size === 'lg' ? 360 : 180} loading={eager ? 'eager' : 'lazy'} decoding="async" referrerpolicy="no-referrer" />
     <span class="yt__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
-    <span class="yt__dur">{fmtDuration(video.seconds)}</span>
+    <span class="yt__dur" aria-hidden="true">{fmtDuration(video.seconds)}</span>
     <span class="sr-only">Lire la vidéo « {video.title} » (lecteur YouTube sans cookies, chargé au clic)</span>
   </button>
 </div>

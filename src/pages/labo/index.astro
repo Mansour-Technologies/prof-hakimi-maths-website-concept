@@ -113,14 +113,14 @@ import { url } from '../../lib/url';
   .lab-hero .lead { color: var(--chalk-2); font-size: var(--step-1); max-width: 44rem; margin-top: 1rem; }
   .lab { padding-block: 1rem clamp(3rem, 2rem + 4vw, 6rem); }
   .lab__grid { display: grid; gap: 1.5rem; }
+  .lab__grid > * { min-width: 0; }
   @media (min-width: 1000px) { .lab__grid { grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr); gap: 2rem; align-items: start; } }
   .lab__canvaswrap { position: relative; border: 1px solid var(--board-3); background: var(--board-2); }
   .lab__canvas { width: 100%; height: min(70vh, 620px); touch-action: none; cursor: crosshair; }
-  @media (max-width: 999px) { .lab__canvas { height: min(58vh, 440px); } }
   .lab__canvas:focus-visible { outline-offset: -3px; }
   .lab__zoom { position: absolute; top: 0.6rem; right: 0.6rem; display: flex; gap: 0.4rem; }
   .lab__zoom .icon-btn { background: rgba(17, 25, 21, 0.85); }
-  .lab__zoom svg { width: 20px; height: 20px; }
+  .lab__zoom :global(svg) { width: 20px; height: 20px; }
   .lab__hint { position: absolute; left: 0.8rem; bottom: 0.4rem; margin: 0; color: var(--chalk-3); font-size: 1.15rem; pointer-events: none; }
   .lab__readout { display: grid; gap: 0.8rem; padding: 1rem 1.1rem; border: 1px solid var(--board-3); border-top: 0; background: #0d1411; }
   .lab__tan { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1rem; font-size: 1.35rem; color: var(--chalk-yellow); min-height: 2.2rem; }
@@ -173,7 +173,15 @@ import { url } from '../../lib/url';
   .lab-notes h2 { font-size: var(--step-2); margin-bottom: 0.8rem; }
   .lab-notes p { color: var(--ink-2); }
   @media (max-width: 999px) {
-    .lab__stage { position: relative; }
+    .lab__stage { position: sticky; top: var(--header-h); z-index: 5; background: var(--board); margin-inline: calc(var(--gutter) * -1); padding-inline: 0; }
+    .lab__canvaswrap, .lab__readout { border-inline: 0; }
+    .lab__canvas { height: min(40vh, 330px); }
+    .lab__readout { padding: 0.6rem var(--gutter); gap: 0.4rem; }
+    .lab__tan { font-size: 1.15rem; min-height: 1.8rem; }
+    .lab__vals dd { font-size: 0.98rem; }
+    .lab__note { font-size: 0.78rem; }
+    .lab-hero { padding-block: 1.4rem 0.4rem; }
+    .lab-hero .lead { font-size: var(--step-0); }
   }
 </style>
 

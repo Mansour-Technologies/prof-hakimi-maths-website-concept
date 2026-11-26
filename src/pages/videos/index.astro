@@ -93,9 +93,9 @@ const fmtDate = (d: string) => new Date(d + 'T12:00:00Z').toLocaleDateString('fr
   .vcell--cours .vcell__t { font-family: var(--f-display); font-size: 1.2rem; font-weight: 400; }
   .vcell__sub { font-size: 0.78rem; color: var(--ink-3); margin: 0 0 0.3rem; }
   .bm { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: 0; padding: 0.4rem 0; min-height: 40px; color: var(--ink-2); font-size: 0.85rem; font-weight: 600; }
-  .bm svg { width: 18px; height: 18px; }
+  .bm :global(svg) { width: 18px; height: 18px; }
   .bm[aria-pressed='true'] { color: var(--red); }
-  .bm[aria-pressed='true'] svg { fill: currentColor; }
+  .bm[aria-pressed='true'] :global(svg) { fill: currentColor; }
   .empty { padding: 2rem 0; }
   .src { font-size: 0.82rem; color: var(--ink-3); margin-top: 2rem; }
 </style>

@@ -54,6 +54,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 1rem); }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
@@ -95,7 +96,7 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 .notice strong { color: var(--chalk); font-weight: 600; }
 
 /* ——— Kicker / eyebrows ——— */
-.kicker { display: inline-flex; align-items: center; gap: 0.6em; font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--ink-2); }
+.kicker { overflow-wrap: anywhere; flex-wrap: wrap; display: inline-flex; align-items: center; gap: 0.6em; font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--ink-2); }
 .board .kicker { color: var(--chalk-2); }
 .dot { width: 0.62em; height: 0.62em; border-radius: 50%; display: inline-block; flex: none; background: var(--red); }
 .dot--o { background: var(--orange); } .dot--g { background: var(--green); } .dot--w { background: var(--chalk); box-shadow: inset 0 0 0 1px var(--rule); }
@@ -174,10 +175,11 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 .section { padding-block: clamp(3.5rem, 2.5rem + 5vw, 7.5rem); }
 .section--tight { padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
 .section-head { display: grid; gap: 0.9rem; margin-bottom: clamp(1.8rem, 1.2rem + 2vw, 3rem); max-width: 50rem; }
+.section-head > * { min-width: 0; }
 .section-head h2 { font-size: var(--step-4); }
 .section-head p { font-size: var(--step-1); color: var(--ink-2); max-width: 40rem; margin: 0; }
 .board .section-head p { color: var(--chalk-2); }
-.h-ar { font-family: var(--f-ar); font-size: 0.5em; color: var(--ink-3); font-weight: 400; display: block; margin-top: 0.3em; }
+.h-ar { text-align: left; font-family: var(--f-ar); font-size: 0.5em; color: var(--ink-3); font-weight: 400; display: block; margin-top: 0.3em; }
 .board .h-ar { color: var(--chalk-3); }
 .hand { font-family: var(--f-hand); font-weight: 600; }
 .demo-tag { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--orange-ink); border: 1px dashed currentColor; padding: 0.2em 0.6em; border-radius: 3px; }
