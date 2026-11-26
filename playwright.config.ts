@@ -12,7 +12,7 @@ export default defineConfig({
   use: { baseURL: BASE, trace: 'off' },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } }, testIgnore: /mobile\.spec/ },
-    { name: 'mobile', use: { ...devices['Pixel 7'], viewport: { width: 375, height: 812 } }, testMatch: /mobile\.spec/ },
+    { name: 'mobile', use: { ...devices['Pixel 7'], viewport: { width: 375, height: 812 } }, testMatch: /(mobile|showcase)\.spec/ },
   ],
   webServer: live ? undefined : { command: 'npx astro preview --port 4391 --ignore-lock', url: BASE, reuseExistingServer: true, timeout: 60_000 },
 });
