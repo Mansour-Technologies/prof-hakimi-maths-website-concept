@@ -9,8 +9,8 @@ test('home loads: no console errors, no failed assets, notice, noindex, attribut
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
   await expect(page.locator('footer a[href="https://mansourtechnologies.com/"]')).toHaveText('Concept digital proposé par Mansour Technologies.');
   await expect(page.locator('h1')).toContainText('Hicham Hakimi');
-  await expect(page.locator('h1')).toContainText('PROF');
-  await expect(page.locator('h1')).toContainText('HAKIMI');
+  await expect(page.locator('h1')).toContainText(/prof/i);
+  await expect(page.locator('h1')).toContainText(/hakimi/i);
   expect(await page.locator('.katex').count()).toBeGreaterThan(5);
   const text = await page.locator('main').innerText();
   expect(text).not.toMatch(/\$[^$\s][^$]*\$/);
@@ -58,6 +58,10 @@ test('every contact / social link: https, verified domain, new tab, rel noopener
   await expect(contact.locator('a.channel--primary')).toHaveAttribute('href', 'https://ig.me/m/prof_hakimi_maths');
   await expect(contact.locator('a[href*="youtube.com/@prof_hakimi_maths"]')).toBeVisible();
   await expect(contact.locator('a[href*="wa.me"]')).toHaveCount(0); // WhatsApp hidden until the number is approved
+  // his current Instagram series link to his own public reels
+  const reels = await page.$$eval('#series .ig a', (as) => as.map((a) => (a as HTMLAnchorElement).href));
+  expect(reels.length).toBeGreaterThanOrEqual(8);
+  for (const r of reels) expect(r).toMatch(/^https:\/\/www\.instagram\.com\/reel\/[\w-]+\/$/);
 });
 
 test('hero: his face is the poster button of the same official video; click loads youtube-nocookie', async ({ page }) => {
@@ -80,7 +84,7 @@ test('poster fallback: if YouTube images fail, a typographic panel replaces them
   const hero = page.locator('.hero__media [data-poster]');
   await expect(hero).toHaveClass(/is-fallback/);
   await expect(hero.locator('.poster__fallback')).toBeVisible();
-  await expect(hero.locator('.poster__fallback')).toContainText('PROF HAKIMI');
+  await expect(hero.locator('.poster__fallback')).toContainText(/prof hakimi/i);
   await expect(hero.locator('button[data-yt]')).toBeVisible();
 });
 
