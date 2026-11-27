@@ -460,3 +460,6 @@ strong { font-weight: 600; color: var(--chalk); }
   radial-gradient(70% 60% at 50% 40%, #5a3d29, #3d2a1d 70%, #2c1f16); }
 .section--desk .chap__intro { color: #dccbb8; }
 .contact__motto { position: absolute; z-index: -1; right: -2vw; bottom: 0.1em; margin: 0; font: 700 clamp(6rem, 3rem + 14vw, 17rem)/1 var(--f-ar); color: rgba(239, 125, 69, 0.07); white-space: nowrap; pointer-events: none; }
+
+.hero__meta { margin-top: 0.9rem; font: italic 600 clamp(0.82rem, 0.74rem + 0.4vw, 1rem)/1.4 var(--f-ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+.hero__meta i { font-style: normal; color: var(--chalk-3); margin: 0 0.2em; }
