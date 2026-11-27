@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Poster from '../components/Poster.astro';
 import Icon from '../components/Icon.astro';
-import { identity, bio, contact } from '../data/site';
+import { identity, bio, bioFr, contact, igSeries, reel } from '../data/site';
 import { series, byId, fmtDuration } from '../data/videos';
 import { chapters } from '../data/chapters';
 import { tex } from '../lib/tex';
@@ -10,96 +10,96 @@ import { tex } from '../lib/tex';
 const watch = (id: string) => `https://www.youtube.com/watch?v=${id}`;
 const hero = byId('POAnIwQIw58');
 ---
-<Base title="Prof Hakimi maths — Hicham Hakimi, professeur de mathématiques à Meknès" description="Hicham Hakimi, « Prof Hakimi » : professeur et chercheur en mathématiques à Meknès. 2ᵉ BAC Sciences expérimentales PC, préparation des concours, cours complets au tableau en français et en darija.">
+<Base title="Prof Hakimi maths — Hicham Hakimi, professeur de mathématiques à Meknès" description="Hicham Hakimi, « Prof Hakimi » : professeur et chercheur en mathématiques à Meknès, au centre Hepta. 2ᵉ BAC Sciences expérimentales PC, préparation des concours, cours complets au tableau en français et en darija.">
 
-  <!-- ═════════ HERO — his face, his tag, his bio ═════════ -->
+  <!-- ═════════ HERO — his face in his own studio light ═════════ -->
   <section class="hero" id="top" data-stage aria-labelledby="hero-title">
+    <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__media">
-      <Poster id="POAnIwQIw58" shape="tall" focus="50% 28%" eager credit={false} chip="الرياضيات : اختراع أم اكتشاف ؟" class="hero__poster" />
+      <Poster id="POAnIwQIw58" shape="column" eager credit={false} chip={`Lire · فلسفة الرياضيات · ${fmtDuration(hero.seconds)}`} class="hero__poster" />
     </div>
+
+    <svg class="hero__curve" viewBox="0 0 640 360" aria-hidden="true" focusable="false">
+      <path class="hero__axis" d="M30 320 H620 M60 340 V20" />
+      <path class="hero__f" d="M60 300 C 180 292, 250 250, 320 190 S 470 50, 610 34" />
+      <path class="hero__t" d="M150 318 L 520 70" />
+      <circle class="hero__pt" cx="320" cy="190" r="5" />
+      <text x="330" y="214" class="hero__lbl">a</text>
+      <text x="548" y="70" class="hero__lbl">𝒞<tspan dy="6" font-size="14">f</tspan></text>
+    </svg>
 
     <div class="hero__type">
       <p class="hero__hand" aria-hidden="true">Hicham</p>
       <h1 id="hero-title" class="hero__title">
         <span class="sr-only">Hicham Hakimi — </span>
-        <span class="tagbar tagbar--xl">PROF</span>
-        <span class="tagbar tagbar--xl tagbar--2">HAKIMI</span>
-        <svg class="swoosh" viewBox="0 0 600 40" aria-hidden="true" preserveAspectRatio="none"><path d="M6 28 C 140 6, 330 4, 594 16" /></svg>
+        <span class="hero__prof">Prof</span>
+        <span class="hero__name">Hakimi<svg class="brush" viewBox="0 0 600 46" preserveAspectRatio="none" aria-hidden="true"><path d="M8 30 C 150 14, 360 8, 592 20" /></svg></span>
       </h1>
-      <p class="hero__ar" lang="ar" dir="rtl"><i class="dot dot--red" aria-hidden="true"></i>{bio[0].text}</p>
-    </div>
-
-    <div class="hero__side">
-      <ul class="hero__bio" aria-label="Sa bio Instagram">
-        <li><i class="dot dot--orange" aria-hidden="true"></i><span>Professeur de mathématiques</span></li>
-        <li><i class="dot dot--green" aria-hidden="true"></i><span>Chercheur en mathématiques</span></li>
-        <li><i class="dot dot--white" aria-hidden="true"></i><span>Centre Hepta · <span aria-hidden="true">📍</span>&#8202;{identity.city}</span></li>
-      </ul>
-      <p class="hero__lead">2ᵉ BAC Sciences expérimentales <abbr title="physique-chimie">PC</abbr> et préparation des concours. Les maths écrites en français au tableau, expliquées en darija.</p>
+      <blockquote class="hero__quote">
+        <p lang="ar" dir="rtl">{bio[0].text}</p>
+        <p class="hero__fr">{bioFr}</p>
+        <footer>Sa bio Instagram · traduction proposée</footer>
+      </blockquote>
+      <p class="hero__lead">Professeur et chercheur en mathématiques à {identity.city}. <strong>2ᵉ BAC Sciences expérimentales PC</strong> et <strong>préparation des concours</strong>, au centre Hepta. Les maths écrites en français, expliquées en darija.</p>
       <div class="hero__cta">
-        <a class="btn btn--red" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
-        <a class="btn btn--line" href="#series"><Icon name="yt" /> Ses séries vidéo</a>
+        <a class="btn btn--ember" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
+        <a class="btn btn--line" href="#series">Ses cours en vidéo</a>
       </div>
-      <p class="credit">Images : vidéos officielles YouTube — Prof Hakimi maths · <span lang="ar" dir="rtl">{hero.title}</span></p>
+      <p class="credit">Image : vidéo officielle YouTube — Prof Hakimi maths · <span lang="ar" dir="rtl">{hero.title}</span></p>
     </div>
-    <div class="hero__board">
-      <Poster id="ZRcJpzyJT6c" shape="portrait" focus="50% 30%" credit={false} chip="Au tableau" class="hero__board-poster" />
-      <p class="hand hand--blue hero__board-note" aria-hidden="true">« Limite et continuité 1 » — au tableau, feutre en main</p>
-    </div>
-
   </section>
 
   <!-- ═════════ LE PROFESSEUR ═════════ -->
-  <section class="section wb" id="professeur" aria-labelledby="prof-title">
+  <section class="section" id="professeur" aria-labelledby="prof-title">
     <div class="wrap">
       <header class="chap reveal">
-        <p class="chap__label" aria-hidden="true">Chapitre :</p>
+        <p class="chap__label" aria-hidden="true">Définition :</p>
         <h2 id="prof-title" class="chap__title">Le professeur</h2>
       </header>
 
       <div class="prof">
-        <div class="prof__bio reveal">
-          <p class="eyebrow">Sa bio, telle qu’il l’écrit</p>
-          <ol class="igbio">
-            {bio.map((l) => (
-              <li class={`igbio__l igbio__l--${l.mark}`} lang={l.lang} dir={l.lang === 'ar' ? 'rtl' : 'ltr'}>
-                <i class={`dot dot--${l.mark}`} aria-hidden="true"></i>{l.text}
-              </li>
-            ))}
-          </ol>
-          <p class="src">Bio Instagram publique de {identity.handle}, consultée le 26/11/2026.</p>
+        <div class="prof__def reveal">
+          <p class="def"><b>Hicham Hakimi</b> — « Prof Hakimi » pour ses élèves — enseigne les mathématiques à Meknès, au centre <a href={identity.centre.url} target="_blank" rel="noopener">Hepta<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>. Il se présente lui-même comme <em>professeur</em> et <em>chercheur</em> en mathématiques.</p>
+
+          <dl class="fiche">
+            <div><dt>Niveau</dt><dd>2ᵉ BAC Sciences expérimentales, filière PC <span class="src-i">(titres de ses vidéos, manuel Al Moufid)</span></dd></div>
+            <div><dt>Concours</dt><dd>Préparation post-bac — sujets Concours Médecine 2024, Concours ENCG 2022</dd></div>
+            <div><dt>1ʳᵉ BAC</dt><dd>Il invite aussi les élèves de 1ʳᵉ année bac au centre <span class="src-i">(reel avec @hepta_center_mkns, 5 oct. 2026)</span></dd></div>
+            <div><dt>Langues</dt><dd>Les formules en français, l’explication en arabe et en darija</dd></div>
+            <div><dt>Parcours</dt><dd class="muted">Diplômes et années d’enseignement : à compléter avec le professeur.</dd></div>
+          </dl>
         </div>
 
-        <dl class="fiche reveal">
-          <div><dt>Nom</dt><dd>Hicham Hakimi <span class="muted">— « Prof Hakimi »</span></dd></div>
-          <div><dt>Matière</dt><dd>Mathématiques — professeur et chercheur</dd></div>
-          <div><dt>Niveau</dt><dd>2ᵉ BAC Sciences expérimentales, filière PC</dd></div>
-          <div><dt>Concours</dt><dd>Préparation post-bac — sujets traités en vidéo : Concours Médecine 2024, Concours ENCG 2022</dd></div>
-          <div><dt>Ville</dt><dd>{identity.city}</dd></div>
-          <div><dt>Centre</dt><dd><a href={identity.centre.url} target="_blank" rel="noopener">{identity.centre.name} ({identity.centre.handle})<span class="sr-only"> sur Instagram (nouvel onglet)</span></a></dd></div>
-          <div><dt>Langues</dt><dd>Les maths en français, l’explication en arabe et en darija</dd></div>
-          <div><dt>Parcours</dt><dd class="muted">Diplômes et années d’enseignement : à compléter avec le professeur.</dd></div>
-        </dl>
+        <figure class="prof__bio reveal" aria-labelledby="bio-cap">
+          <ol class="igbio">
+            {bio.map((l) => (
+              <li lang={l.lang} dir={l.lang === 'ar' ? 'rtl' : 'ltr'}>{l.text}</li>
+            ))}
+          </ol>
+          <figcaption id="bio-cap" class="src">Sa bio Instagram, telle qu’il l’écrit — @prof_hakimi_maths, consultée le 27/11/2026.</figcaption>
+        </figure>
       </div>
     </div>
 
     <div class="classroom reveal">
-      <Poster id="6XTA_EX9w2Y" shape="landscape" focus="45% 40%" />
-      <div class="classroom__note">
-        <p class="hand hand--green">Chapitre :</p>
-        <p class="hand hand--red hand--u">Calcul Intégral</p>
-        <p class="classroom__txt">1 h 07 de cours au tableau, de la primitive à l’aire sous la courbe — en classe, comme ses élèves le voient.</p>
+      <Poster id="6XTA_EX9w2Y" shape="landscape" focus="45% 35%" chip="Calcul intégral · 1:07:11" />
+      <div class="classroom__aside">
+        <div class="classroom__note" aria-hidden="true">
+          <p class="hand hand--green">Chapitre :</p>
+          <p class="hand hand--red">Calcul Intégral</p>
+        </div>
+        <p class="classroom__txt">En classe, au centre : un tableau en colonnes, « Chapitre » en vert, les titres soulignés en rouge, l’aire sous la courbe hachurée entre <i>a</i> et <i>b</i>. Une heure sept de cours, filmée comme ses élèves la vivent.</p>
       </div>
     </div>
   </section>
 
   <!-- ═════════ SES SÉRIES ═════════ -->
-  <section class="section studio" id="series" aria-labelledby="series-title">
+  <section class="section section--deep" id="series" aria-labelledby="series-title">
     <div class="wrap">
-      <header class="chap chap--dark reveal">
+      <header class="chap reveal">
         <p class="chap__label" aria-hidden="true">Sur sa chaîne :</p>
         <h2 id="series-title" class="chap__title">Ses séries</h2>
-        <p class="chap__intro">Nommées comme il les nomme. Chaque image est la vidéo officielle&nbsp;: touchez pour la lire ici.</p>
+        <p class="chap__intro">Nommées comme il les nomme, éclairées comme dans son studio. Chaque image est la vidéo officielle&nbsp;: touchez pour la lire ici.</p>
       </header>
 
       <ol class="series">
@@ -110,35 +110,48 @@ const hero = byId('POAnIwQIw58');
               <h3 class="serie__name" dir="auto">{s.name}</h3>
               {s.ar && <p class="serie__ar" dir="auto">{s.ar}</p>}
               <p class="serie__note">{s.note}</p>
-              <ul class="serie__eps" aria-label={`Épisodes : ${s.name}`}>
-                {s.ids.map((id, k) => { const v = byId(id); return (
-                  <li><a href={watch(id)} target="_blank" rel="noopener" title={v.title}><span dir="auto">{s.labels[k]}</span> <span class="dur">{fmtDuration(v.seconds)}</span><span class="sr-only"> — {v.title} (YouTube, nouvel onglet)</span></a></li>
-                ); })}
-              </ul>
             </div>
-            <Poster id={s.cover.id} frame={s.cover.frame} shape="portrait" focus="50% 35%" class="serie__poster" />
+            <ul class="serie__eps" aria-label={`Épisodes : ${s.name}`}>
+              {s.ids.map((id, k) => { const v = byId(id); return (
+                <li><a href={watch(id)} target="_blank" rel="noopener" title={v.title}><span dir="auto">{s.labels[k]}</span> <span class="dur">{fmtDuration(v.seconds)}</span><span class="sr-only"> — {v.title} (YouTube, nouvel onglet)</span></a></li>
+              ); })}
+            </ul>
+            <Poster id={s.cover.id} frame={s.cover.frame} shape={s.cover.frame === 'maxresdefault' ? 'column' : 'portrait'} focus="50% 35%" class="serie__poster" />
           </li>
         ))}
       </ol>
-      <p class="series__more"><a class="btn btn--light" href={contact.youtube} target="_blank" rel="noopener"><Icon name="yt" /> Toute la chaîne Prof Hakimi maths<span class="sr-only"> (nouvel onglet)</span></a></p>
+
+      <div class="ig reveal">
+        <p class="chap__label" aria-hidden="true">Et sur Instagram, en ce moment :</p>
+        <ul class="ig__list">
+          {igSeries.map((s) => (
+            <li class="ig__item">
+              <p class={`ig__name ${'ar' in s ? 'ig__name--ar' : ''}`} dir="auto"><span>{s.name}</span></p>
+              <p class="ig__sub" dir="auto">{s.sub}</p>
+              <p class="ig__links">
+                {s.reels.map((r, k) => (
+                  <a href={reel(r.code)} target="_blank" rel="noopener">{s.reels.length > 1 ? `Épisode ${k + 1}` : 'Voir le reel'}<span class="sr-only"> — {s.name}, Instagram,</span> <span class="dur">{r.date}</span><span class="sr-only"> (nouvel onglet)</span></a>
+                ))}
+              </p>
+              <p class="ig__tag" dir="auto">{s.tag}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p class="series__more"><a class="btn btn--line" href={contact.youtube} target="_blank" rel="noopener"><Icon name="yt" /> Toute la chaîne Prof Hakimi maths<span class="sr-only"> (nouvel onglet)</span></a></p>
     </div>
   </section>
 
   <!-- ═════════ PROGRAMME ═════════ -->
-  <section class="section wb" id="programme" aria-labelledby="prog-title">
+  <section class="section" id="programme" aria-labelledby="prog-title">
     <div class="wrap">
       <header class="chap reveal">
         <p class="chap__label" aria-hidden="true">Chapitre :</p>
-        <h2 id="prog-title" class="chap__title">Programme 2ᵉ BAC PC</h2>
-        <p class="chap__intro">Les chapitres qu’il a déjà traités publiquement, tracés comme ses tableaux au feutre.</p>
+        <h2 id="prog-title" class="chap__title">Programme <span class="nw">2ᵉ BAC PC</span></h2>
+        <p class="chap__intro">Les chapitres qu’il a déjà traités publiquement, posés sur son tableau comme il les pose&nbsp;: en colonnes, au feutre vert, rouge et bleu.</p>
       </header>
 
       <div class="board reveal">
-        <div class="board__levels">
-          <p><b>Niveau vérifié</b> 2ᵉ BAC Sciences expérimentales — PC</p>
-          <p><b>Aussi</b> préparation des concours post-bac</p>
-          <p class="muted"><b>Autres niveaux</b> à préciser avec le professeur</p>
-        </div>
         <div class="ptable" role="table" aria-label="Chapitres traités publiquement">
           <div class="ptable__row ptable__row--head" role="row">
             <span role="columnheader">Chapitre</span><span role="columnheader" lang="ar">الدرس</span><span role="columnheader">À retenir</span><span role="columnheader">Ses vidéos</span>
@@ -150,83 +163,82 @@ const hero = byId('POAnIwQIw58');
               <span role="cell" class="ptable__f" set:html={tex(c.formula)} />
               <span role="cell" class="ptable__v">
                 {c.ids.map((id) => { const v = byId(id); return (
-                  <a href={watch(id)} target="_blank" rel="noopener" title={v.title}><span aria-hidden="true">▶</span> {fmtDuration(v.seconds)}<span class="sr-only"> — {v.title} (YouTube, nouvel onglet)</span></a>
+                  <a href={watch(id)} target="_blank" rel="noopener" title={v.title}><span aria-hidden="true">▸</span>&#8239;{fmtDuration(v.seconds)}<span class="sr-only"> — {v.title} (YouTube, nouvel onglet)</span></a>
                 ); })}
               </span>
             </div>
           ))}
         </div>
-        <p class="board__tray" aria-hidden="true"><i class="mk mk--blue"></i><i class="mk mk--red"></i><i class="mk mk--green"></i></p>
+        <p class="board__foot"><span>Niveau vérifié : 2ᵉ BAC Sciences expérimentales — PC.</span> <span>Autres niveaux : à préciser avec le professeur.</span></p>
+        <p class="board__tray" aria-hidden="true"><i class="mk mk--green"></i><i class="mk mk--red"></i><i class="mk mk--blue"></i></p>
       </div>
 
       <div class="shorts reveal">
-        <Poster id="5tfLXLIbouY" shape="portrait" focus="50% 30%" />
-        <Poster id="M-kjMa0B8Uw" shape="portrait" focus="50% 30%" />
-        <Poster id="n8D5n4ufnp4" shape="portrait" focus="50% 40%" />
-        <Poster id="K57PPKXKBHs" shape="portrait" focus="50% 40%" />
+        <Poster id="5tfLXLIbouY" shape="column" chip="Limites et continuité 2" />
+        <Poster id="M-kjMa0B8Uw" shape="column" chip="La fonction ln" />
+        <Poster id="xxG1hjN4r1c" shape="column" chip="Suite majorée" />
       </div>
     </div>
   </section>
 
   <!-- ═════════ SA MÉTHODE ═════════ -->
-  <section class="section paper" id="approche" aria-labelledby="app-title">
+  <section class="section section--deep" id="approche" aria-labelledby="app-title">
     <div class="wrap">
       <header class="chap reveal">
-        <p class="chap__label" aria-hidden="true">Définition :</p>
+        <p class="chap__label" aria-hidden="true">Propriété :</p>
         <h2 id="app-title" class="chap__title">Sa méthode</h2>
+        <p class="chap__intro">Quatre constats tirés de ses vidéos publiques — rien de plus.</p>
       </header>
       <ol class="method">
         <li class="reveal">
           <h3>Le cours en entier, au tableau.</h3>
-          <p>Pas de résumé de trente secondes&nbsp;: les nombres complexes en deux séances live (1 h 24 puis 55 min), le calcul intégral en 1 h 07, et les exercices du manuel Al Moufid corrigés pas à pas.</p>
+          <p>Les nombres complexes en deux séances live (1&nbsp;h&nbsp;24 puis 55&nbsp;min), le calcul intégral en 1&nbsp;h&nbsp;07, et les exercices du manuel Al Moufid corrigés pas à pas.</p>
         </li>
         <li class="reveal">
           <h3>Le français pour écrire, la darija pour comprendre.</h3>
-          <p>Les titres et les formules restent en français, comme à l’examen&nbsp;; l’explication passe en arabe et en darija, comme en classe.</p>
+          <p>Titres et formules restent en français, comme à l’examen&nbsp;; l’explication passe en arabe et en darija, comme en classe.</p>
           <p class="bi"><span>Dérivabilité de la fonction réciproque</span><span lang="ar" dir="rtl">اشتقاق الدالة العكسية</span></p>
         </li>
         <li class="reveal">
           <h3>Le mental fait partie du programme.</h3>
-          <p>À côté des chapitres, il parle aux élèves de persévérance et de confiance — dans ses propres mots&nbsp;:</p>
-          <blockquote class="thumbquote" lang="ar" dir="rtl"><p>دير لي عليك</p></blockquote>
-          <blockquote class="thumbquote thumbquote--sm" lang="ar" dir="rtl"><p>واخا تكون معطل متفقدش الأمل.. مزال وقتك غا يجي</p></blockquote>
-          <p class="src">Titres de ses vidéos du 2 novembre 2025 et du 11 avril 2026.</p>
+          <p>Sa devise revient en titre et en hashtag (#dir_li_3lik)&nbsp;:</p>
+          <blockquote class="aq"><p lang="ar" dir="rtl"><span>دير لي عليك</span></p><footer><span lang="fr">« Fais ce qui dépend de toi. »</span> Titre du 2 nov. 2025 · traduction proposée</footer></blockquote>
+          <blockquote class="aq aq--sm"><p lang="ar" dir="rtl"><span>واخا تكون معطل متفقدش الأمل.. مزال وقتك غا يجي</span></p><footer>Titre du 11 avril 2026</footer></blockquote>
         </li>
         <li class="reveal">
           <h3>Chercheur, donc curieux.</h3>
-          <p>Évariste Galois, le nombre phénix 142857, et une vraie question de philosophe posée à ses élèves&nbsp;:</p>
-          <blockquote class="thumbquote thumbquote--amber" lang="ar" dir="rtl"><p>الرياضيات بين الاختراع والاكتشاف. ماذا تعتقد؟</p></blockquote>
-          <p class="src">Titre de sa vidéo du 8 novembre 2026.</p>
+          <p>Évariste Galois, le nombre phénix 142857, le paradoxe de l’infini — et une vraie question de philosophe posée à ses élèves&nbsp;:</p>
+          <blockquote class="aq"><p lang="ar" dir="rtl"><span>الرياضيات بين الاختراع والاكتشاف. ماذا تعتقد؟</span></p><footer><span lang="fr">« Les maths : invention ou découverte ? »</span> Titre du 8 nov. 2026</footer></blockquote>
         </li>
       </ol>
     </div>
   </section>
 
   <!-- ═════════ ÉTUDIER AVEC LUI ═════════ -->
-  <section class="section wb" id="etudier" aria-labelledby="et-title">
+  <section class="section" id="etudier" aria-labelledby="et-title">
     <div class="wrap">
       <header class="chap reveal">
-        <p class="chap__label" aria-hidden="true">Méthode :</p>
+        <p class="chap__label" aria-hidden="true">Récurrence :</p>
         <h2 id="et-title" class="chap__title">Étudier avec lui</h2>
-        <p class="chap__intro">Trois étapes, comme une suite&nbsp;: chacune mène à la suivante.</p>
+        <p class="chap__intro">Trois feuilles, comme celles qu’il remplit en live&nbsp;: chacune mène à la suivante.</p>
       </header>
       <ol class="steps">
-        <li class="sheet-card reveal">
-          <p class="sheet-card__n" set:html={tex('u_0')} />
+        <li class="sheetc reveal">
+          <p class="sheetc__n" set:html={tex('u_0')} />
           <h3>Regarder ses cours</h3>
-          <p>Commencez par ses séances complètes et ses Shorts sur YouTube — gratuits, chapitre par chapitre.</p>
+          <p>Ses séances complètes et ses Shorts sur YouTube — gratuits, chapitre par chapitre.</p>
           <a class="link" href={contact.youtube} target="_blank" rel="noopener">Ouvrir la chaîne<span class="sr-only"> YouTube (nouvel onglet)</span> →</a>
         </li>
-        <li class="sheet-card reveal">
-          <p class="sheet-card__n" set:html={tex('u_1 = u_0 + 1')} />
+        <li class="sheetc reveal">
+          <p class="sheetc__n" set:html={tex('u_1 = u_0 + 1')} />
           <h3>Lui écrire</h3>
           <p>Un message direct sur Instagram&nbsp;: votre niveau (2ᵉ BAC PC, concours…) et ce que vous cherchez.</p>
           <a class="link" href={contact.instagramDM} target="_blank" rel="noopener">Message Instagram<span class="sr-only"> (nouvel onglet)</span> →</a>
         </li>
-        <li class="sheet-card reveal">
-          <p class="sheet-card__n" set:html={tex('u_2 = u_1 + 1')} />
+        <li class="sheetc reveal">
+          <p class="sheetc__n" set:html={tex('u_2 = u_1 + 1')} />
           <h3>À Meknès, au centre</h3>
-          <p>Sa bio indique le centre Hepta Center Meknès. Horaires, groupes et tarifs&nbsp;: à demander directement — rien n’est inventé ici.</p>
+          <p>Hepta Center Meknès — « centre de formation, cours de soutien ». Horaires, groupes et tarifs&nbsp;: à demander directement, rien n’est inventé ici.</p>
           <a class="link" href={identity.centre.url} target="_blank" rel="noopener">{identity.centre.handle}<span class="sr-only"> sur Instagram (nouvel onglet)</span> →</a>
         </li>
       </ol>
@@ -234,12 +246,13 @@ const hero = byId('POAnIwQIw58');
   </section>
 
   <!-- ═════════ CONTACT ═════════ -->
-  <section class="section studio contact" id="contact" aria-labelledby="ct-title">
+  <section class="section contact" id="contact" aria-labelledby="ct-title">
+    <div class="contact__glow" aria-hidden="true"></div>
     <div class="wrap contact__grid">
       <div class="contact__type reveal">
-        <p class="chap__label chap__label--light" aria-hidden="true">Une question ?</p>
-        <h2 id="ct-title" class="contact__title"><span class="tagbar tagbar--lg tagbar--light">ÉCRIRE À</span><span class="tagbar tagbar--lg tagbar--light">PROF HAKIMI</span></h2>
-        <p class="contact__lead">Le plus simple&nbsp;: un message Instagram. C’est là qu’il publie le plus.</p>
+        <p class="chap__label" aria-hidden="true">Une question ?</p>
+        <h2 id="ct-title" class="contact__title"><span class="contact__w">Écrire à</span> <span class="contact__n">Prof Hakimi<svg class="brush" viewBox="0 0 600 46" preserveAspectRatio="none" aria-hidden="true"><path d="M8 30 C 150 14, 360 8, 592 20" /></svg></span></h2>
+        <p class="contact__lead">Le plus simple&nbsp;: un message Instagram. C’est là qu’il publie chaque semaine.</p>
       </div>
       <ul class="channels reveal">
         <li><a class="channel channel--primary" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /><span><b>Message Instagram</b><small>ig.me/m/prof_hakimi_maths</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
@@ -247,7 +260,7 @@ const hero = byId('POAnIwQIw58');
         <li><a class="channel" href={contact.youtube} target="_blank" rel="noopener"><Icon name="yt" /><span><b>YouTube</b><small>@prof_hakimi_maths</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
         <li><a class="channel" href={contact.instagram} target="_blank" rel="noopener"><Icon name="ig" /><span><b>Instagram</b><small>@prof_hakimi_maths</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
         <li><a class="channel" href={contact.threads} target="_blank" rel="noopener"><Icon name="threads" /><span><b>Threads</b><small>@prof_hakimi_maths</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
-        <li><a class="channel" href={identity.centre.url} target="_blank" rel="noopener"><span class="channel__pin" aria-hidden="true">📍</span><span><b>Hepta Center Meknès</b><small>@hepta_center_mkns</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
+        <li><a class="channel" href={identity.centre.url} target="_blank" rel="noopener"><Icon name="home" /><span><b>Hepta Center Meknès</b><small>@hepta_center_mkns</small></span><span class="sr-only"> (nouvel onglet)</span></a></li>
       </ul>
     </div>
   </section>

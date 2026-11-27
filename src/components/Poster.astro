@@ -4,19 +4,21 @@
  * The image is the YouTube-served frame (hotlinked from i.ytimg.com, never
  * rehosted). Click → youtube-nocookie iframe (no autoplay). If the image fails,
  * a typographic fallback panel is shown instead.
+ *
+ * shape="column": a Short's cover is a 9:16 frame pillar-boxed in 1280×720;
+ * the image is scaled so only that sharp centre column fills the box.
  */
 import { byId, poster, fmtDuration } from '../data/videos';
 type Frame = 'maxresdefault' | 'hqdefault' | 'hq1' | 'hq2' | 'hq3' | 'sddefault';
 interface Props {
   id: string;
   frame?: Frame;
-  shape?: 'portrait' | 'landscape' | 'square' | 'tall';
+  shape?: 'portrait' | 'landscape' | 'column';
   focus?: string; // object-position
   eager?: boolean;
   credit?: boolean;
   chip?: string; // visible caption inside the poster
   class?: string;
-  sizes?: string;
 }
 const { id, frame = 'maxresdefault', shape = 'landscape', focus = '50% 40%', eager = false, credit = true, chip, class: cls = '' } = Astro.props;
 const v = byId(id);
@@ -26,9 +28,9 @@ const dims = frame === 'maxresdefault' ? [1280, 720] : frame === 'sddefault' ? [
 <figure class={`poster poster--${shape} ${cls}`} data-poster>
   <div class="poster__box">
     <button type="button" class="poster__btn" data-yt={id} data-title={v.title} aria-label={`Lire la vidéo officielle : ${v.title}`}>
-      <img src={src} alt="" width={dims[0]} height={dims[1]} style={`object-position:${focus}`} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding="async" referrerpolicy="no-referrer" onerror="this.closest('[data-poster]').classList.add('is-fallback')" />
-      <span class="poster__fallback" aria-hidden="true"><b>PROF HAKIMI</b><span>{v.title}</span></span>
-      <span class="poster__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6L19 12z" fill="currentColor"/></svg>{chip && <span>{chip}</span>}</span>
+      <img src={src} alt="" width={dims[0]} height={dims[1]} style={shape === 'column' ? undefined : `object-position:${focus}`} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding="async" referrerpolicy="no-referrer" onerror="this.closest('[data-poster]').classList.add('is-fallback')" />
+      <span class="poster__fallback" aria-hidden="true"><b>Prof Hakimi</b><span dir="auto">{v.title}</span></span>
+      <span class="poster__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6L19 12z" fill="currentColor"/></svg>{chip && <span class="poster__chip" dir="auto">{chip}</span>}</span>
       <span class="poster__dur" aria-hidden="true">{fmtDuration(v.seconds)}</span>
     </button>
   </div>

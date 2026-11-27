@@ -12,7 +12,7 @@ async function page(w, h, mobile) {
   await p.waitForTimeout(1500);
   return p;
 }
-const settle = async (p) => { await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 500) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 80)); } window.scrollTo({ top: 0, behavior: 'instant' }); }); await p.waitForLoadState('networkidle'); await p.waitForTimeout(800); };
+const settle = async (p) => { await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 300) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 120)); } window.scrollTo({ top: 0, behavior: 'instant' }); }); await p.waitForLoadState('networkidle'); await p.waitForTimeout(800); };
 let p = await page(375, 812, true);
 await p.screenshot({ path: `${out}/mobile-home-375.png` });
 await settle(p);

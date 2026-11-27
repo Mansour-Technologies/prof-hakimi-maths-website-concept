@@ -1,8 +1,10 @@
 ---
-import '@fontsource-variable/archivo/standard.css';
-import '@fontsource-variable/archivo/standard-italic.css';
-import '@fontsource-variable/cairo/index.css';
-import '@fontsource-variable/caveat/wght.css';
+import '@fontsource-variable/saira/standard.css';
+import '@fontsource-variable/saira/standard-italic.css';
+import '@fontsource-variable/newsreader/standard.css';
+import '@fontsource-variable/newsreader/standard-italic.css';
+import '@fontsource-variable/noto-naskh-arabic/wght.css';
+import '@fontsource/covered-by-your-grace/latin-400.css';
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
 import Icon from '../components/Icon.astro';
@@ -23,7 +25,7 @@ const href = (h: string) => (home ? h : url('') + h);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" content="#0e1116" />
+    <meta name="theme-color" content="#130d0b" />
     <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
     <link rel="preconnect" href="https://i.ytimg.com" />
@@ -47,12 +49,12 @@ const href = (h: string) => (home ? h : url('') + h);
     <header class="site-header">
       <div class="wrap">
         <a class="wordmark" href={home ? '#top' : url('')} aria-label="Prof Hakimi maths — haut de page">
-          <span class="tagbar" aria-hidden="true">PROF HAKIMI</span><span class="wordmark__m" aria-hidden="true">maths</span>
+          <span class="wordmark__p" aria-hidden="true">Prof</span><span class="wordmark__h" aria-hidden="true">Hakimi</span><span class="wordmark__m" aria-hidden="true">maths</span>
         </a>
         <nav class="mainnav" aria-label="Sections de la page">
           <ul>{nav.map((n) => <li><a href={href(n.href)}>{n.label}</a></li>)}</ul>
         </nav>
-        <a class="btn btn--ink btn--sm header-cta" href={contact.instagramDM} target="_blank" rel="noopener">Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
+        <a class="btn btn--ember btn--sm header-cta" href={contact.instagramDM} target="_blank" rel="noopener">Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
         <button type="button" class="menu-btn" data-sheet-open aria-haspopup="dialog" aria-controls="sheet" aria-expanded="false"><Icon name="menu" /><span>Menu</span></button>
       </div>
     </header>
@@ -64,8 +66,8 @@ const href = (h: string) => (home ? h : url('') + h);
     <footer class="site-footer">
       <div class="wrap">
         <div class="footer-id">
-          <a class="wordmark wordmark--light" href={home ? '#top' : url('')} aria-label="Prof Hakimi maths — haut de page"><span class="tagbar" aria-hidden="true">PROF HAKIMI</span><span class="wordmark__m" aria-hidden="true">maths</span></a>
-          <p>Concept de site vitrine pour {identity.fullName} — professeur et chercheur en mathématiques à {identity.city}. 2ᵉ BAC Sciences expérimentales et préparation des concours.</p>
+          <a class="wordmark wordmark--light" href={home ? '#top' : url('')} aria-label="Prof Hakimi maths — haut de page"><span class="wordmark__p" aria-hidden="true">Prof</span><span class="wordmark__h" aria-hidden="true">Hakimi</span><span class="wordmark__m" aria-hidden="true">maths</span></a>
+          <p>Concept de site vitrine pour {identity.fullName} — professeur et chercheur en mathématiques à {identity.city}. 2ᵉ BAC Sciences expérimentales et préparation des concours, au centre Hepta.</p>
           <p class="demo-tag">Démonstration non officielle</p>
         </div>
         <div>
@@ -81,7 +83,7 @@ const href = (h: string) => (home ? h : url('') + h);
           </ul>
         </div>
         <div class="footer-legal">
-          <p>{notice} Aucune donnée collectée, aucun cookie déposé par ce site. Images des vidéos : servies par YouTube, propriété de leur auteur.</p>
+          <p>{notice} Aucune donnée collectée, aucun cookie déposé par ce site. Images des vidéos : servies par YouTube, propriété de leur auteur. Aucune photo hébergée sur ce site.</p>
           <p><a href={contact.studio} rel="noopener" target="_blank">Concept digital proposé par Mansour Technologies.</a></p>
         </div>
       </div>
@@ -93,11 +95,11 @@ const href = (h: string) => (home ? h : url('') + h);
         <h2 id="sheet-title">Menu</h2>
         <button type="button" class="icon-btn" data-sheet-close aria-label="Fermer le menu"><Icon name="close" /></button>
       </div>
-      <p class="sheet__chap" aria-hidden="true">Chapitre :</p>
+      <p class="sheet__chap" aria-hidden="true">Sommaire :</p>
       <ul>
         {nav.map((n, i) => <li><a href={href(n.href)}><span class="sheet__n">{i + 1})</span>{n.label}</a></li>)}
       </ul>
-      <a class="btn btn--ink sheet__cta" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
+      <a class="btn btn--ember sheet__cta" href={contact.instagramDM} target="_blank" rel="noopener"><Icon name="ig" /> Écrire au prof<span class="sr-only"> sur Instagram (nouvel onglet)</span></a>
     </div>
 
     <script>
